@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "touchstone.parser"
+version = "0.1.0"
+description = "Python library for Touchstone .sNp parsing and S-parameter analysis in RF/microwave engineering."
+readme = "README.md"
+authors = [
+    { name = "Surya Kantamangaraj", email = "suryaraj@example.com" }
+]
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+]
+keywords = ["Touchstone parser", "S-parameter analysis", "RF/microwave Python library"]
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.20.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-benchmark>=4.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+]
+viz = [
+    "matplotlib>=3.5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/suryakantamangaraj/touchstone-python"
+Issues = "https://github.com/suryakantamangaraj/touchstone-python/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["touchstone*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
