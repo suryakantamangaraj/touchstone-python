@@ -1,6 +1,8 @@
-import pytest
 import numpy as np
+import pytest
+
 from touchstone.parser import read_snp
+
 
 def test_mixed_delimiters_robustness(tmp_path):
     """Edge: Mixed spaces, tabs, and commas."""
@@ -10,6 +12,7 @@ def test_mixed_delimiters_robustness(tmp_path):
     assert len(data.frequency) == 2
     assert data.s_parameters[1, 0, 0] == complex(0.6, 0.6)
 
+
 def test_abrupt_eof_handling(tmp_path):
     """Edge: File ends mid-block."""
     d = tmp_path / "test.s2p"
@@ -17,6 +20,7 @@ def test_abrupt_eof_handling(tmp_path):
     d.write_text("# GHZ S RI R 50\n1 0 0 0 0 0 0 0 0\n2 0")
     data = read_snp(str(d))
     assert len(data.frequency) == 1
+
 
 def test_non_numeric_noise_in_data(tmp_path):
     """Edge: Skip non-numeric data entries."""
@@ -27,6 +31,7 @@ def test_non_numeric_noise_in_data(tmp_path):
     # 0.6 0.6 3.0 (3)
     # 0.7 0.7 (2) -> truncated
     assert len(data.frequency) == 2
+
 
 def test_extra_lines_and_whitespace(tmp_path):
     """Edge: Multiple empty lines and leading/trailing spaces."""

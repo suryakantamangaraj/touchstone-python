@@ -12,13 +12,31 @@ authors = [
 ]
 license = { text = "MIT" }
 classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Physics",
     "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+    "Typing :: Typed",
 ]
-keywords = ["Touchstone parser", "S-parameter analysis", "RF/microwave Python library"]
+keywords = [
+    "Touchstone",
+    "parser",
+    "S-parameters",
+    "RF",
+    "microwave",
+    "engineering",
+    "NumPy",
+    "scikit-rf",
+    "EDA",
+]
 requires-python = ">=3.8"
 dependencies = [
     "numpy>=1.20.0",
@@ -40,7 +58,10 @@ viz = [
 
 [project.urls]
 Homepage = "https://github.com/suryakantamangaraj/touchstone-python"
+Documentation = "https://github.com/suryakantamangaraj/touchstone-python#readme"
+Repository = "https://github.com/suryakantamangaraj/touchstone-python.git"
 Issues = "https://github.com/suryakantamangaraj/touchstone-python/issues"
+Changelog = "https://github.com/suryakantamangaraj/touchstone-python/releases"
 
 [tool.setuptools.packages.find]
 where = ["src"]
