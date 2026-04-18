@@ -34,11 +34,13 @@ def test_reference_resistance_parsing(tmp_path):
 def test_comment_handling_variations(tmp_path):
     """Format: Verify robustness against various comment placements."""
     d = tmp_path / "test.s1p"
-    d.write_text("""! Start comment
+    d.write_text(
+        """! Start comment
 # GHZ S RI R 50 ! Inline header comment
 ! Middle comment
 1.0 0.5 0.5 ! Data comment
-! End comment""")
+! End comment"""
+    )
     data = read_snp(str(d))
     assert len(data.frequency) == 1
     assert data.frequency[0] == 1e9

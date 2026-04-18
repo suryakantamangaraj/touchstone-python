@@ -31,10 +31,12 @@ def test_parse_snp_matrix_ordering(tmp_path):
     # Row 1: S11, S12, S13
     # Row 2: S21, S22, S23
     # Row 3: S31, S32, S33
-    d.write_text("""# GHZ S RI R 50
+    d.write_text(
+        """# GHZ S RI R 50
 1 1.1 1.1 1.2 1.2 1.3 1.3
   2.1 2.1 2.2 2.2 2.3 2.3
-  3.1 3.1 3.2 3.2 3.3 3.3""")
+  3.1 3.1 3.2 3.2 3.3 3.3"""
+    )
     data = read_snp(str(d))
     assert data.n_ports == 3
     assert data.s_parameters[0, 0, 2] == complex(1.3, 1.3)  # S13
