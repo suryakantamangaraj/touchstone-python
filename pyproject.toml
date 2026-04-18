@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "touchstone.parser"
-version = "0.1.1"
+version = "0.1.2"
 description = "Python library for Touchstone .sNp parsing and S-parameter analysis in RF/microwave engineering."
 readme = "README.md"
 authors = [
-    { name = "Surya Mangaraj", email = "suryaraj@example.com" }
+    { name = "Surya Mangaraj", email = "contact@suryaraj.com" }
 ]
 license = { text = "MIT" }
 classifiers = [
