@@ -9,6 +9,13 @@
 
 `touchstone.parser` is a specialized library designed for RF/microwave engineers and researchers. It provides a robust, type-hinted, and NumPy-integrated API for reading and analyzing Touchstone files, ensuring high fidelity and compliance with the EIA/IBIS Touchstone® specification.
 
+## Why touchstone.parser?
+
+While other libraries exist, `touchstone.parser` is built with a focus on:
+- **Performance**: Leveraging NumPy vectorization for parsing and processing large N-port data.
+- **Developer Experience**: Modern Python features (dataclasses, type hints, PEP 517).
+- **Correctness**: Strict adherence to the Touchstone standard, including handling the subtle port-ordering differences between 2-port and N-port files.
+
 ---
 
 ## Key Features
@@ -59,13 +66,15 @@ s21_db = data.magnitude(to_port=2, from_port=1, db=True)
 ```python
 import matplotlib.pyplot as plt
 
-# Plot S11 magnitude
-plt.plot(data.frequency / 1e9, data.magnitude(1, 1, db=True), label="S11")
-plt.plot(data.frequency / 1e9, data.magnitude(2, 1, db=True), label="S21")
+# Plot S11 and S21 magnitude
+plt.figure(figsize=(10, 6))
+plt.plot(data.frequency / 1e9, data.magnitude(1, 1, db=True), label="S11 (Return Loss)")
+plt.plot(data.frequency / 1e9, data.magnitude(2, 1, db=True), label="S21 (Insertion Loss)")
 plt.xlabel("Frequency (GHz)")
 plt.ylabel("Magnitude (dB)")
+plt.title(f"S-Parameters (Z0 = {data.z0} Ω)")
 plt.legend()
-plt.grid(True)
+plt.grid(True, which='both', linestyle='--', alpha=0.5)
 plt.show()
 ```
 
@@ -83,19 +92,16 @@ The library correctly handles the special ordering for 2-port files defined by t
 - **2-Port**: `S11, S21, S12, S22`
 - **N-Port (N > 2)**: `S11, S12, ..., S1N, S21, ..., SNN`
 
-## API Reference
+## Roadmap & Future Plans
 
-### `read_snp(filepath: str) -> TouchstoneData`
-Reads a `.sNp` file and returns a structured `TouchstoneData` object.
+We are actively working on expanding the library's capabilities. Planned features include:
 
-### `TouchstoneData` (Dataclass)
-- `frequency`: `np.ndarray` (1D array of frequencies in Hz)
-- `s_parameters`: `np.ndarray` (3D array: `[n_freq, n_ports, n_ports]`)
-- `z0`: `float` (Reference impedance, default 50.0 Ω)
-- `n_ports`: `int` (Derived property: number of ports)
-- `n_freq`: `int` (Derived property: number of frequency points)
-- `magnitude(to_port, from_port, db=True)`: Helper for magnitude calculation.
-- `phase(to_port, from_port, deg=True)`: Helper for phase calculation.
+- [ ] **Mixed-Mode S-Parameters**: Automatic conversion from single-ended to differential and common-mode parameters.
+- [ ] **Network Operations**: Implementation of cascading (T-matrix) and de-embedding utilities.
+- [ ] **Touchstone 2.0 Keywords**: Full support for `[Network Data]`, `[Noise Data]`, and `[Mixed-Mode Order]`.
+- [ ] **Interactive Visualization**: Built-in support for interactive Smith charts and Bode plots using Plotly.
+- [ ] **Export Utilities**: Ability to write/export `TouchstoneData` objects back to `.sNp` files.
+- [ ] **Interpolation**: High-performance frequency re-sampling and spline interpolation.
 
 ## Development
 
