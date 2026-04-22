@@ -63,11 +63,11 @@ class TouchstoneData:
     def get_s(self, to_port: int, from_port: int) -> np.ndarray:
         """
         Get the specific S-parameter (or Y, Z) array across all frequencies.
-        
+
         Args:
             to_port (int): The target port (1-indexed).
             from_port (int): The source port (1-indexed).
-            
+
         Returns:
             np.ndarray: Complex array of the parameter values.
         """
@@ -78,7 +78,7 @@ class TouchstoneData:
     def to_insertion_loss(self) -> np.ndarray:
         """
         Calculate insertion loss (positive dB) from S21.
-        
+
         Returns:
             np.ndarray: Array of insertion loss values in dB.
         """
@@ -89,7 +89,7 @@ class TouchstoneData:
     def to_return_loss(self) -> np.ndarray:
         """
         Calculate return loss (positive dB) from S11.
-        
+
         Returns:
             np.ndarray: Array of return loss values in dB.
         """
@@ -100,7 +100,7 @@ class TouchstoneData:
     def to_vswr(self) -> np.ndarray:
         """
         Calculate VSWR from S11.
-        
+
         Returns:
             np.ndarray: Array of VSWR values.
         """
@@ -111,11 +111,11 @@ class TouchstoneData:
     def in_frequency_range(self, min_hz: float, max_hz: float) -> "TouchstoneData":
         """
         Filter the data to a specific frequency range.
-        
+
         Args:
             min_hz (float): Minimum frequency in Hz.
             max_hz (float): Maximum frequency in Hz.
-            
+
         Returns:
             TouchstoneData: A new filtered instance.
         """
@@ -126,7 +126,7 @@ class TouchstoneData:
     def to_csv_string(self) -> str:
         """
         Export the data to a CSV formatted string.
-        
+
         Returns:
             str: CSV string representation.
         """

@@ -9,6 +9,7 @@ class FrequencyUnit(Enum):
     """
     Enum representing the frequency unit.
     """
+
     HZ = "Hz"
     KHZ = "kHz"
     MHZ = "MHz"

@@ -9,6 +9,7 @@ class ParameterType(Enum):
     """
     Enum representing the network parameter type.
     """
+
     S = "S"
     Y = "Y"
     Z = "Z"

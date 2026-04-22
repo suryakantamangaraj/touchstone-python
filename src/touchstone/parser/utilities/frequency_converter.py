@@ -2,14 +2,15 @@
 Utility for frequency conversions.
 """
 
+
 def normalize_frequency(freq: float, unit: str) -> float:
     """
     Normalize frequency to Hz.
-    
+
     Args:
         freq (float): The frequency value.
         unit (str): The frequency unit (e.g., 'Hz', 'kHz').
-        
+
     Returns:
         float: The frequency in Hz.
     """

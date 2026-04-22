@@ -10,10 +10,10 @@ import numpy as np
 def db_to_mag(db: Any) -> Any:
     """
     Convert Decibels (dB) to linear magnitude.
-    
+
     Args:
         db (Any): The dB value(s).
-        
+
     Returns:
         Any: Linear magnitude.
     """
@@ -23,10 +23,10 @@ def db_to_mag(db: Any) -> Any:
 def mag_to_db(mag: Any) -> Any:
     """
     Convert linear magnitude to Decibels (dB).
-    
+
     Args:
         mag (Any): The linear magnitude.
-        
+
     Returns:
         Any: Magnitude in dB.
     """
@@ -36,10 +36,10 @@ def mag_to_db(mag: Any) -> Any:
 def deg_to_rad(deg: Any) -> Any:
     """
     Convert degrees to radians.
-    
+
     Args:
         deg (Any): Angle in degrees.
-        
+
     Returns:
         Any: Angle in radians.
     """
@@ -49,10 +49,10 @@ def deg_to_rad(deg: Any) -> Any:
 def rad_to_deg(rad: Any) -> Any:
     """
     Convert radians to degrees.
-    
+
     Args:
         rad (Any): Angle in radians.
-        
+
     Returns:
         Any: Angle in degrees.
     """
@@ -62,11 +62,11 @@ def rad_to_deg(rad: Any) -> Any:
 def ma_to_complex(mag: float, angle_deg: float) -> complex:
     """
     Convert magnitude and angle (degrees) to a complex number.
-    
+
     Args:
         mag (float): Linear magnitude.
         angle_deg (float): Phase angle in degrees.
-        
+
     Returns:
         complex: The complex number representation.
     """
@@ -77,11 +77,11 @@ def ma_to_complex(mag: float, angle_deg: float) -> complex:
 def db_to_complex(db: float, angle_deg: float) -> complex:
     """
     Convert magnitude (dB) and angle (degrees) to a complex number.
-    
+
     Args:
         db (float): Magnitude in decibels.
         angle_deg (float): Phase angle in degrees.
-        
+
     Returns:
         complex: The complex number representation.
     """
@@ -92,11 +92,11 @@ def db_to_complex(db: float, angle_deg: float) -> complex:
 def ri_to_complex(real: float, imag: float) -> complex:
     """
     Convert real and imaginary parts to a complex number.
-    
+
     Args:
         real (float): Real part.
         imag (float): Imaginary part.
-        
+
     Returns:
         complex: The complex number.
     """
@@ -106,10 +106,10 @@ def ri_to_complex(real: float, imag: float) -> complex:
 def vswr_from_s11(s11: Any) -> Any:
     """
     Calculate VSWR from S11 parameter.
-    
+
     Args:
         s11 (Any): Complex reflection coefficient.
-        
+
     Returns:
         Any: Voltage Standing Wave Ratio.
     """

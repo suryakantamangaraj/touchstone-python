@@ -15,6 +15,7 @@ from touchstone.parser.utilities.touchstone_data_extensions import (
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_data(s11=0 + 0j, s21=0 + 0j, s12=0 + 0j, s22=0 + 0j, n_ports=2):
     """Create a single-frequency TouchstoneData with given S-parameters."""
     freqs = np.array([1e9])
@@ -31,6 +32,7 @@ def _make_data(s11=0 + 0j, s21=0 + 0j, s12=0 + 0j, s22=0 + 0j, n_ports=2):
 # ---------------------------------------------------------------------------
 # get_magnitude / get_phase
 # ---------------------------------------------------------------------------
+
 
 class TestMagnitudeAndPhase:
     """Tests for get_magnitude and get_phase helpers."""
@@ -64,6 +66,7 @@ class TestMagnitudeAndPhase:
 # Return Loss
 # ---------------------------------------------------------------------------
 
+
 class TestReturnLoss:
     """Tests for to_return_loss."""
 
@@ -88,6 +91,7 @@ class TestReturnLoss:
 # ---------------------------------------------------------------------------
 # Insertion Loss
 # ---------------------------------------------------------------------------
+
 
 class TestInsertionLoss:
     """Tests for to_insertion_loss."""
@@ -122,6 +126,7 @@ class TestInsertionLoss:
 # VSWR
 # ---------------------------------------------------------------------------
 
+
 class TestVSWR:
     """Tests for to_vswr."""
 
@@ -148,6 +153,7 @@ class TestVSWR:
 # ---------------------------------------------------------------------------
 # Frequency Range Filtering
 # ---------------------------------------------------------------------------
+
 
 class TestFrequencyRange:
     """Tests for in_frequency_range."""
