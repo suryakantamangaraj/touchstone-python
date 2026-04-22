@@ -4,7 +4,7 @@ Core Touchstone file parser.
 
 import os
 import re
-from typing import List, Optional
+from typing import Iterable, List, Optional, TextIO
 
 import numpy as np
 
@@ -34,28 +34,33 @@ class TouchstoneParser:
 
     @staticmethod
     def _parse_lines(
-        lines: List[str], n_ports: int = 0, filename: Optional[str] = None
+        lines: Iterable[str], n_ports: int = 0, filename: Optional[str] = None
     ) -> TouchstoneData:
         comments: List[str] = []
         options = None
 
-        for line in lines:
+        lines_list = list(lines) if not isinstance(lines, list) else lines
+
+        for line_idx, line in enumerate(lines_list, start=1):
             trimmed = line.strip()
             if not trimmed:
                 continue
             if trimmed.startswith("!"):
+                # Only collect comments that appear before data or options?
+                # The original just collected everything. We'll keep it.
                 comments.append(trimmed[1:].strip())
                 continue
 
             clean_line = line.split("!")[0].strip()
             if clean_line.startswith("#"):
+                if options is not None:
+                    raise TouchstoneParserException("Multiple option lines found", line_idx)
                 options = OptionLineParser.parse(clean_line)
-                break
 
         if options is None:
             options = OptionLineParser.parse("# GHZ S MA R 50")
 
-        numbers = list(DataLineTokenizer.get_numbers(lines))
+        numbers = list(DataLineTokenizer.get_numbers(lines_list))
 
         if n_ports <= 0:
             n_ports = TouchstoneParser._infer_n_ports(len(numbers))
@@ -119,6 +124,32 @@ class TouchstoneParser:
         )
 
     @staticmethod
+    def detect_port_count(filename: str) -> int:
+        """
+        Detect the number of ports from the filename extension.
+
+        Args:
+            filename (str): The name of the file (e.g. 'filter.s2p').
+
+        Returns:
+            int: The detected number of ports.
+
+        Raises:
+            TouchstoneParserException: If the extension is invalid.
+            ValueError: If the filename is null or empty.
+        """
+        if not filename:
+            raise ValueError("filename cannot be null or empty")
+
+        base = os.path.basename(filename)
+        ext_match = re.search(r"\.s(\d+)p$", base.lower())
+        if not ext_match:
+            raise TouchstoneParserException(
+                f"Could not determine port count from extension of {filename}"
+            )
+        return int(ext_match.group(1))
+
+    @staticmethod
     def parse(filepath: str) -> TouchstoneData:
         """
         Parse a Touchstone file from disk.
@@ -132,19 +163,14 @@ class TouchstoneParser:
         Raises:
             TouchstoneParserException: If the file extension is invalid.
         """
-        filename = os.path.basename(filepath)
-        ext_match = re.search(r"\.s(\d+)p$", filename.lower())
-        if not ext_match:
-            raise TouchstoneParserException(
-                f"Could not determine port count from extension of {filepath}"
-            )
+        if not filepath:
+            raise ValueError("filepath cannot be null or empty")
 
-        n_ports = int(ext_match.group(1))
+        filename = os.path.basename(filepath)
+        n_ports = TouchstoneParser.detect_port_count(filename)
 
         with open(filepath, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-
-        return TouchstoneParser._parse_lines(lines, n_ports=n_ports, filename=filename)
+            return TouchstoneParser._parse_lines(f, n_ports=n_ports, filename=filename)
 
     @staticmethod
     def parse_string(
@@ -163,3 +189,41 @@ class TouchstoneParser:
         """
         lines = content.splitlines()
         return TouchstoneParser._parse_lines(lines, n_ports=n_ports, filename=filename)
+
+    @staticmethod
+    def parse_stream(
+        stream: TextIO, filename: Optional[str] = None
+    ) -> TouchstoneData:
+        """
+        Parse Touchstone data from a text stream (e.g., io.StringIO).
+
+        Args:
+            stream (TextIO): The stream to read from.
+            filename (Optional[str]): Optional filename for port detection and metadata.
+
+        Returns:
+            TouchstoneData: The parsed data.
+        """
+        n_ports = 0
+        if filename:
+            try:
+                n_ports = TouchstoneParser.detect_port_count(filename)
+            except TouchstoneParserException:
+                pass
+
+        return TouchstoneParser._parse_lines(stream, n_ports=n_ports, filename=filename)
+
+    @staticmethod
+    async def parse_async(filepath: str) -> TouchstoneData:
+        """
+        Asynchronously parse a Touchstone file from disk.
+
+        Args:
+            filepath (str): Path to the .sNp file.
+
+        Returns:
+            TouchstoneData: The parsed data.
+        """
+        import asyncio
+
+        return await asyncio.to_thread(TouchstoneParser.parse, filepath)
