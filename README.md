@@ -1,118 +1,215 @@
 # touchstone.parser
 
-**A high-performance, technically accurate Python library for Touchstone (.sNp) parsing and S-parameter analysis.**
+> **A Python library for Touchstone `.sNp` parsing and S‑parameter analysis in RF/microwave engineering.**
 
-[![PyPI version](https://img.shields.io/pypi/v/touchstone.parser.svg)](https://pypi.org/project/touchstone.parser/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI Status](https://github.com/suryakantamangaraj/touchstone-python/actions/workflows/ci.yml/badge.svg)](https://github.com/suryakantamangaraj/touchstone-python/actions)
-[![Python Versions](https://img.shields.io/pypi/pyversions/touchstone.parser.svg)](https://pypi.org/project/touchstone.parser/)
+[![PyPI](https://img.shields.io/pypi/v/touchstone.parser?style=flat-square&logo=nuget&label=PyPI)](https://www.pypi.org/packages/touchstone.parser)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/touchstone.parser?style=flat-square&logo=nuget)](https://www.pypi.org/packages/touchstone.parser)
+[![Build](https://img.shields.io/github/actions/workflow/status/suryakantamangaraj/touchstone-python/ci.yml?branch=main&style=flat-square&logo=github&label=CI)](https://github.com/suryakantamangaraj/touchstone-python/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/codecov/c/github/suryakantamangaraj/touchstone-python?style=flat-square&logo=codecov)](https://codecov.io/gh/suryakantamangaraj/touchstone-python)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue?style=flat-square&logo=github)](https://suryakantamangaraj.github.io/touchstone-python/)
+[![License](https://img.shields.io/github/license/suryakantamangaraj/touchstone-python?style=flat-square)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-512BD4?style=flat-square&logo=dotnet)](https://python.org/)
 
-`touchstone.parser` is a specialized library designed for RF/microwave engineers and researchers. It provides a robust, type-hinted, and NumPy-integrated API for reading and analyzing Touchstone files, ensuring high fidelity and compliance with the EIA/IBIS Touchstone® specification.
-
-## Why touchstone.parser?
-
-While other libraries exist, `touchstone.parser` is built with a focus on:
-- **Performance**: Leveraging NumPy vectorization for parsing and processing large N-port data.
-- **Developer Experience**: Modern Python features (dataclasses, type hints, PEP 517).
-- **Correctness**: Strict adherence to the Touchstone standard, including handling the subtle port-ordering differences between 2-port and N-port files.
+**touchstone.parser** is a clean, modular, enterprise-ready Python library for parsing [Touchstone](https://ibis.org/) (`.sNp`) files — the industry-standard format for RF and microwave S‑parameter data. It provides strongly typed classes, LINQ-friendly APIs, and seamless integration into simulation and analysis workflows.
 
 ---
 
-## Key Features
+## ✨ Features
 
-- **Standard Compliance**: Full support for Touchstone 1.1 and 2.0 file structures.
-- **Multidimensional Analysis**: Handles N-port data (from `.s1p` up to `.sNp`) with efficient NumPy vectorization.
-- **Metadata Aware**: Automatically parses frequency units (Hz, kHz, MHz, GHz), parameter types (S, Y, Z, G, H), and data formats (MA, DB, RI).
-- **Reference Impedance**: Full support for custom reference impedance (`Z0`) specified in the option line.
-- **Scientific Workflow**: Native NumPy array export for seamless integration with SciPy, Matplotlib, and scikit-rf.
-- **Zero Dependencies**: Lightweight core with only `numpy` as a required dependency.
+- **Parse `.sNp` files** into strongly typed Python classes (`TouchstoneData`, `FrequencyPoint`, `NetworkParameter`)
+- **Multi-port support** — 1‑port through N‑port networks
+- **All data formats** — Real/Imaginary (RI), Magnitude/Angle (MA), Decibel/Angle (DB)
+- **All frequency units** — Hz, kHz, MHz, GHz with automatic normalization
+- **All parameter types** — S, Y, Z, H, G
+- **LINQ-friendly APIs** — query S‑parameters with `GetS11()`, `GetS21()`, `GetParameter(i, j)`
+- **RF calculations** — insertion loss, return loss, VSWR out of the box
+- **Export utilities** — CSV export and Touchstone writer for round-trip fidelity
+- **Async support** — `ParseAsync()` with cancellation token
+- **Cross-platform** — targets `net6.0` and `netstandard2.1`
+- **Ecosystem breadth** — check out the [Python version](https://github.com/suryakantamangaraj/touchstone-python) for Python-based workflows
+- **Zero dependencies** — pure Python, no external packages
 
-## Installation
+---
 
-Install the package via `pip`:
+## 📦 Installation
 
 ```bash
 pip install touchstone.parser
 ```
 
-For development or visualization support:
+Or via the PyPI Package Manager:
+
+```
+pip install touchstone.parser
+```
+
+---
+
+## 🚀 Quick Start
+
+```csharp
+using touchstone.parser.Parsing;
+using touchstone.parser.Utilities;
+using touchstone.parser.Models;
+
+// Parse a Touchstone file
+var data = TouchstoneParser.Parse("filter.s2p");
+
+Console.WriteLine($"Ports: {data.NumberOfPorts}");
+Console.WriteLine($"Frequency points: {data.Count}");
+
+// Query S21 insertion loss with LINQ
+foreach (var (freqHz, param) in data.GetS21())
+{
+    double freqGhz = FrequencyConverter.FromHz(freqHz, FrequencyUnit.GHz);
+    Console.WriteLine($"{freqGhz:F3} GHz → S21 = {param.MagnitudeDb:F2} dB");
+}
+
+// Filter to a frequency range
+var passband = data.InFrequencyRange(2.0e9, 3.0e9);
+
+// Compute VSWR
+foreach (var (freqHz, vswr) in data.ToVswr())
+{
+    Console.WriteLine($"VSWR = {vswr:F3}");
+}
+
+// Export to CSV
+using var writer = new StreamWriter("output.csv");
+data.ToCsv(writer, FrequencyUnit.GHz, DataFormat.DecibelAngle);
+```
+
+---
+
+## 📖 API Overview
+
+### Parsing
+
+| Method | Description |
+|--------|-------------|
+| `TouchstoneParser.Parse(filePath)` | Parse from a file path |
+| `TouchstoneParser.Parse(stream, fileName?)` | Parse from a stream |
+| `TouchstoneParser.Parse(textReader, fileName?)` | Parse from a TextReader |
+| `TouchstoneParser.ParseString(content, fileName?)` | Parse from a raw string |
+| `TouchstoneParser.ParseAsync(filePath, ct)` | Async file parsing |
+
+### Data Access (LINQ-friendly)
+
+| Method | Description |
+|--------|-------------|
+| `data.GetParameter(row, col)` | Get any S‑parameter across all frequencies |
+| `data.GetS11()` / `GetS21()` / `GetS12()` / `GetS22()` | Common 2‑port shortcuts |
+| `data.Frequencies` | All frequency values in Hz |
+| `data.GetFrequenciesIn(FrequencyUnit.GHz)` | Frequencies in any unit |
+| `data[index]` | Access a specific frequency point |
+
+### RF Calculations
+
+| Method | Description |
+|--------|-------------|
+| `data.ToInsertionLoss()` | \|S21\| insertion loss in dB |
+| `data.ToReturnLoss()` | \|S11\| return loss in dB |
+| `data.ToVswr()` | VSWR from S11 |
+
+### Filtering & Export
+
+| Method | Description |
+|--------|-------------|
+| `data.InFrequencyRange(minHz, maxHz)` | Filter to frequency range |
+| `data.Where(predicate)` | Custom filtering |
+| `data.ToCsv(writer, unit, format)` | Export to CSV |
+| `data.ToCsvString(unit, format)` | Export to CSV string |
+| `TouchstoneWriter.Write(data, filePath)` | Write back to Touchstone format |
+
+### Utilities
+
+| Method | Description |
+|--------|-------------|
+| `FrequencyConverter.Convert(val, from, to)` | Convert between frequency units |
+| `NetworkParameter.FromRealImaginary(re, im)` | Create from RI |
+| `NetworkParameter.FromMagnitudeAngle(mag, deg)` | Create from MA |
+| `NetworkParameter.FromDecibelAngle(dB, deg)` | Create from DB |
+
+---
+
+## 🏗️ Project Structure
+
+```
+touchstone-python/
+├── src/
+│   └── touchstone/parser/          # Core library
+│       ├── models/                  # Domain models (enums, data classes)
+│       ├── parsing/                 # Parser engine
+│       └── utilities/               # Converters, extensions, writer
+├── tests/                           # pytest test suite
+├── pyproject.toml                   # Project metadata and dependencies
+├── mkdocs.yml                       # Documentation configuration
+└── .github/workflows/               # GitHub Actions CI/CD
+```
+
+---
+
+## 🔧 Supported Formats
+
+| Feature | Supported |
+|---------|-----------|
+| Touchstone v1.0 / v1.1 | ✅ |
+| 1‑port (`.s1p`) | ✅ |
+| 2‑port (`.s2p`) | ✅ |
+| Multi-port (`.s3p`, `.s4p`, ...) | ✅ |
+| Real-Imaginary (RI) | ✅ |
+| Magnitude-Angle (MA) | ✅ |
+| Decibel-Angle (DB) | ✅ |
+| Hz / kHz / MHz / GHz | ✅ |
+| S / Y / Z / H / G parameters | ✅ |
+| Comments and metadata | ✅ |
+| Touchstone v2.0 keywords | 🔜 Planned |
+
+---
+
+## 🧪 Running Tests
 
 ```bash
-pip install "touchstone.parser[dev,viz]"
+pytest --verbosity normal
 ```
 
-## Quickstart
+---
 
-### Basic Usage
+## 🤝 Contributing
 
-```python
-from touchstone.parser import read_snp
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-# Parse a 2-port Touchstone file (.s2p)
-data = read_snp("measurements.s2p")
+---
 
-# Frequencies are automatically normalized to Hz
-print(f"Frequency Range: {data.frequency.min():.2e} to {data.frequency.max():.2e} Hz")
+## 💬 Community
 
-# Access S-parameters as a complex NumPy array (shape: n_freq, n_ports, n_ports)
-s_matrix = data.s_parameters
+- ⭐ **Star this repo** and related RF/microwave projects to help them grow - then mention your project in context to build visibility.
+- 💡 **Share feedback** via [GitHub Discussions](https://github.com/suryakantamangaraj/touchstone-python/discussions) - we'd love to hear how you're using the library, what's working, and what could be better.
 
-# Get S21 magnitude in dB
-s21_db = data.magnitude(to_port=2, from_port=1, db=True)
-```
+---
 
-### Advanced Analysis
+## 📄 License
 
-```python
-import matplotlib.pyplot as plt
+This project is licensed under the [MIT License](LICENSE).
 
-# Plot S11 and S21 magnitude
-plt.figure(figsize=(10, 6))
-plt.plot(data.frequency / 1e9, data.magnitude(1, 1, db=True), label="S11 (Return Loss)")
-plt.plot(data.frequency / 1e9, data.magnitude(2, 1, db=True), label="S21 (Insertion Loss)")
-plt.xlabel("Frequency (GHz)")
-plt.ylabel("Magnitude (dB)")
-plt.title(f"S-Parameters (Z0 = {data.z0} Ω)")
-plt.legend()
-plt.grid(True, which='both', linestyle='--', alpha=0.5)
-plt.show()
-```
+---
 
-## Technical Specification
+## 💖 Support & Funding
 
-### Supported Formats
-| Format | Description | Conversion |
-|--------|-------------|------------|
-| **RI** | Real / Imaginary | $S = R + jI$ |
-| **MA** | Magnitude / Angle | $S = M \cdot e^{j\theta}$ (Angle in degrees) |
-| **DB** | dB / Angle | $S = 10^{db/20} \cdot e^{j\theta}$ (Angle in degrees) |
+If this library helps you in your RF/microwave engineering work, consider supporting its maintenance and the development of new features:
+- **[Sponsor on GitHub](https://github.com/sponsors/suryakantamangaraj)**
+- ⭐ **Star the project** to help it gain visibility in the engineering community.
 
-### Port Ordering
-The library correctly handles the special ordering for 2-port files defined by the standard:
-- **2-Port**: `S11, S21, S12, S22`
-- **N-Port (N > 2)**: `S11, S12, ..., S1N, S21, ..., SNN`
+---
 
-## Roadmap & Future Plans
+## 📚 Resources
 
-We are actively working on expanding the library's capabilities. Planned features include:
+- [Touchstone File Format Specification (IBIS)](https://ibis.org/)
+- [S-parameter — Wikipedia](https://en.wikipedia.org/wiki/Scattering_parameters)
+- [PyPI Package](https://www.pypi.org/packages/touchstone.parser)
 
-- [ ] **Mixed-Mode S-Parameters**: Automatic conversion from single-ended to differential and common-mode parameters.
-- [ ] **Network Operations**: Implementation of cascading (T-matrix) and de-embedding utilities.
-- [ ] **Touchstone 2.0 Keywords**: Full support for `[Network Data]`, `[Noise Data]`, and `[Mixed-Mode Order]`.
-- [ ] **Interactive Visualization**: Built-in support for interactive Smith charts and Bode plots using Plotly.
-- [ ] **Export Utilities**: Ability to write/export `TouchstoneData` objects back to `.sNp` files.
-- [ ] **Interpolation**: High-performance frequency re-sampling and spline interpolation.
+---
 
-## Development
-
-We welcome contributions! To set up your local environment:
-
-1. Clone the repository.
-2. Create a virtual environment: `python -m venv venv`
-3. Install dev dependencies: `pip install -e ".[dev]"`
-4. Run tests: `pytest`
-5. Run linting: `flake8 src tests` and `mypy src`
-
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+<p align="center">
+  Made by <a href="https://suryaraj.com">suryamangaraj</a> · Built for the RF/microwave engineering community 📡
+</p>
