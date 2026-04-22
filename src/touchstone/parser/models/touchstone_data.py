@@ -3,11 +3,17 @@ Data model for Touchstone parsed data.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
 
 from .touchstone_options import TouchstoneOptions
+
+if TYPE_CHECKING:
+    from .data_format import DataFormat
+    from .frequency_point import FrequencyPoint
+    from .frequency_unit import FrequencyUnit
+    from .network_parameter import NetworkParameter
 
 
 @dataclass(frozen=True)
