@@ -66,20 +66,21 @@ jobs:
           git tag -a "v${{ steps.version.outputs.VERSION }}" -m "Release v${{ steps.version.outputs.VERSION }}"
           git push origin "v${{ steps.version.outputs.VERSION }}"
 
+      - name: Build package
+        run: python -m build
+
       - name: Create Release
         if: steps.version.outputs.EXISTS == 'false' || startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.VERSION }}
           name: v${{ steps.version.outputs.VERSION }}
           draft: false
           prerelease: false
           generate_release_notes: true
+          files: dist/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build package
-        run: python -m build
 
       - name: Publish package to PyPI
         if: steps.version.outputs.EXISTS == 'false' || startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
