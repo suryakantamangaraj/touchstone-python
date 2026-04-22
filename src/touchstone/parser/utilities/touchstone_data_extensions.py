@@ -115,3 +115,45 @@ def in_frequency_range(
         filename=data.filename,
         metadata=data.metadata,
     )
+
+
+def get_s11(data: TouchstoneData):
+    """Get an iterable of (FrequencyHz, NetworkParameter) for S11."""
+    return data.get_parameter(1, 1)
+
+
+def get_s21(data: TouchstoneData):
+    """Get an iterable of (FrequencyHz, NetworkParameter) for S21."""
+    return data.get_parameter(2, 1)
+
+
+def get_s12(data: TouchstoneData):
+    """Get an iterable of (FrequencyHz, NetworkParameter) for S12."""
+    return data.get_parameter(1, 2)
+
+
+def get_s22(data: TouchstoneData):
+    """Get an iterable of (FrequencyHz, NetworkParameter) for S22."""
+    return data.get_parameter(2, 2)
+
+
+def get_frequencies_in(data: TouchstoneData, unit) -> np.ndarray:
+    """Get all frequencies converted to the specified unit."""
+    from .frequency_converter import get_multiplier
+
+    return data.frequency / get_multiplier(unit)
+
+
+def min_frequency_hz(data: TouchstoneData) -> float:
+    """Get the minimum frequency in Hz."""
+    if data.n_freq == 0:
+        raise ValueError("Touchstone data contains no frequency points.")
+    return float(np.min(data.frequency))
+
+
+def max_frequency_hz(data: TouchstoneData) -> float:
+    """Get the maximum frequency in Hz."""
+    if data.n_freq == 0:
+        raise ValueError("Touchstone data contains no frequency points.")
+    return float(np.max(data.frequency))
+
