@@ -14,9 +14,9 @@ def test_csv_export():
 
     lines = csv_str.strip().split("\r\n" if "\r\n" in csv_str else "\n")
     assert len(lines) == 3
-    assert "Frequency (Hz)" in lines[0]
+    assert "Frequency (GHz)" in lines[0]
     assert "S11_Mag" in lines[0]
     assert "S21_Mag" in lines[0]
 
-    # Check first data row
-    assert lines[1].startswith("1000000000.0")
+    # Check first data row (1e9 Hz = 1.0 GHz)
+    assert lines[1].startswith("1.0")

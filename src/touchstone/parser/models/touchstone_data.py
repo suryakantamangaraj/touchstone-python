@@ -239,7 +239,7 @@ class TouchstoneData:
         actual_fmt = fmt if fmt is not None else self.options.data_format
         actual_unit = unit if unit is not None else self.options.frequency_unit
 
-        headers = [f"Frequency ({actual_unit.name})"]
+        headers = [f"Frequency ({actual_unit.value})"]
         for i in range(1, self.n_ports + 1):
             for j in range(1, self.n_ports + 1):
                 if actual_fmt == DataFormat.RI:
