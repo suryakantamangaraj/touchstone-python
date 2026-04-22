@@ -1,0 +1,18 @@
+! This file has extensive comments
+! ============================================
+! Project: RF Filter Characterization
+! Engineer: John Smith
+! Date: 2026-03-15
+! Equipment: Keysight PNA-X N5247B
+! Calibration: Full 2-port SOLT
+! Temperature: 25°C
+! Humidity: 45%
+! ============================================
+! Note: Measurements taken in shielded enclosure
+! Port 1: Input (SMA-F)
+! Port 2: Output (SMA-F)
+! ============================================
+# GHZ S MA R 50
+! Data follows
+1.0 0.1 170.0 0.95 -5.0 0.94 -6.0 0.12 175.0
+2.0 0.15 160.0 0.90 -15.0 0.89 -16.0 0.14 165.0

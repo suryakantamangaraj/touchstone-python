@@ -1,0 +1,12 @@
+! 3-port S-parameter data
+! Device: Directional coupler
+! Format: Magnitude-Angle
+# GHZ S MA R 50
+! Freq followed by 3x3 matrix in row-major order
+! Each row on its own line (row 1 starts on frequency line)
+1.0 0.1 170.0 0.95 -5.0 0.05 -90.0
+0.95 -5.0 0.1 175.0 0.05 -85.0
+0.05 -90.0 0.05 -85.0 0.1 -170.0
+2.0 0.12 165.0 0.93 -10.0 0.06 -88.0
+0.93 -10.0 0.12 170.0 0.06 -83.0
+0.06 -88.0 0.06 -83.0 0.12 -165.0

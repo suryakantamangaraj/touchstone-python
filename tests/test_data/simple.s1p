@@ -1,0 +1,10 @@
+! Simple 1-port S-parameter file
+! Device: 50 ohm load
+! Date: 2026-01-15
+# MHZ S RI R 50
+! Frequency S11(Real) S11(Imag)
+100 0.01 0.02
+200 0.015 0.025
+500 0.02 0.03
+1000 0.025 0.035
+2000 0.03 0.04
