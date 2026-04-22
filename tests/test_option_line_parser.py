@@ -1,6 +1,7 @@
 import pytest
 from touchstone.parser.parsing.option_line_parser import OptionLineParser
 
+
 def test_option_line_parser():
     options = OptionLineParser.parse("# MHZ Y RI R 75")
     assert options.frequency_unit.name == "MHZ"

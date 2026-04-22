@@ -3,11 +3,13 @@ from .frequency_unit import FrequencyUnit
 from .parameter_type import ParameterType
 from .data_format import DataFormat
 
+
 @dataclass(frozen=True)
 class TouchstoneOptions:
     """
     Represents the option line configuration parsed from a Touchstone file.
     """
+
     frequency_unit: FrequencyUnit = FrequencyUnit.GHZ
     parameter_type: ParameterType = ParameterType.S
     data_format: DataFormat = DataFormat.MA

@@ -3,6 +3,7 @@ from ..models.frequency_unit import FrequencyUnit
 from ..models.parameter_type import ParameterType
 from ..models.touchstone_options import TouchstoneOptions
 
+
 class OptionLineParser:
     @staticmethod
     def parse(line: str) -> TouchstoneOptions:

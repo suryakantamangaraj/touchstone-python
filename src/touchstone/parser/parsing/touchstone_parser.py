@@ -6,7 +6,11 @@ import numpy as np
 
 from ..models.touchstone_data import TouchstoneData
 from ..utilities.frequency_converter import normalize_frequency
-from ..utilities.network_parameter_extensions import db_to_complex, ma_to_complex, ri_to_complex
+from ..utilities.network_parameter_extensions import (
+    db_to_complex,
+    ma_to_complex,
+    ri_to_complex,
+)
 from .data_line_tokenizer import DataLineTokenizer
 from .option_line_parser import OptionLineParser
 from ..models.data_format import DataFormat
@@ -69,7 +73,9 @@ class TouchstoneParser:
 
         data = np.array(numbers).reshape(n_points, nums_per_freq)
 
-        freqs = np.array([normalize_frequency(f, options.frequency_unit.value) for f in data[:, 0]])
+        freqs = np.array(
+            [normalize_frequency(f, options.frequency_unit.value) for f in data[:, 0]]
+        )
         raw_s = data[:, 1:]
 
         s_params = np.zeros((n_points, n_ports, n_ports), dtype=complex)
@@ -111,7 +117,9 @@ class TouchstoneParser:
         filename = os.path.basename(filepath)
         ext_match = re.search(r"\.s(\d+)p$", filename.lower())
         if not ext_match:
-            raise TouchstoneParserException(f"Could not determine port count from extension of {filepath}")
+            raise TouchstoneParserException(
+                f"Could not determine port count from extension of {filepath}"
+            )
 
         n_ports = int(ext_match.group(1))
 
@@ -121,6 +129,8 @@ class TouchstoneParser:
         return TouchstoneParser._parse_lines(lines, n_ports=n_ports, filename=filename)
 
     @staticmethod
-    def parse_string(content: str, n_ports: int = 0, filename: Optional[str] = None) -> TouchstoneData:
+    def parse_string(
+        content: str, n_ports: int = 0, filename: Optional[str] = None
+    ) -> TouchstoneData:
         lines = content.splitlines()
         return TouchstoneParser._parse_lines(lines, n_ports=n_ports, filename=filename)

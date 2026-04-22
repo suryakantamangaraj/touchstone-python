@@ -3,11 +3,13 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 from .touchstone_options import TouchstoneOptions
 
+
 @dataclass(frozen=True)
 class TouchstoneData:
     """
     Structured object representing Touchstone (.sNp) data.
     """
+
     frequency: np.ndarray  # 1D array of frequencies in Hz
     s_parameters: np.ndarray  # 3D array: (n_freq, n_ports, n_ports)
     options: TouchstoneOptions = field(default_factory=TouchstoneOptions)

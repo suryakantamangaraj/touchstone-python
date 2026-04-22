@@ -67,12 +67,22 @@ def write_snp_to_string(
         if n <= 2:
             parts = [_format_value(freq)]
             if n == 1:
-                _append_parameter(parts, data.s_parameters[p, 0, 0], options.data_format)
+                _append_parameter(
+                    parts, data.s_parameters[p, 0, 0], options.data_format
+                )
             else:
-                _append_parameter(parts, data.s_parameters[p, 0, 0], options.data_format)
-                _append_parameter(parts, data.s_parameters[p, 1, 0], options.data_format)
-                _append_parameter(parts, data.s_parameters[p, 0, 1], options.data_format)
-                _append_parameter(parts, data.s_parameters[p, 1, 1], options.data_format)
+                _append_parameter(
+                    parts, data.s_parameters[p, 0, 0], options.data_format
+                )
+                _append_parameter(
+                    parts, data.s_parameters[p, 1, 0], options.data_format
+                )
+                _append_parameter(
+                    parts, data.s_parameters[p, 0, 1], options.data_format
+                )
+                _append_parameter(
+                    parts, data.s_parameters[p, 1, 1], options.data_format
+                )
             output.write(" ".join(parts) + "\n")
         else:
             first_row = True

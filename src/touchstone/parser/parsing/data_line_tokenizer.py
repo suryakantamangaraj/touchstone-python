@@ -1,6 +1,7 @@
 import re
 from typing import Iterator, Iterable
 
+
 class DataLineTokenizer:
     def __init__(self):
         pass
