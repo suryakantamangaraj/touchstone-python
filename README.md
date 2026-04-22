@@ -2,13 +2,13 @@
 
 > **A Python library for Touchstone `.sNp` parsing and S‑parameter analysis in RF/microwave engineering.**
 
-[![PyPI](https://img.shields.io/pypi/v/touchstone.parser?style=flat-square&logo=nuget&label=PyPI)](https://www.pypi.org/packages/touchstone.parser)
-[![PyPI Downloads](https://img.shields.io/pypi/dm/touchstone.parser?style=flat-square&logo=nuget)](https://www.pypi.org/packages/touchstone.parser)
+[![PyPI](https://img.shields.io/pypi/v/touchstone.parser?style=flat-square&logo=pypi&label=PyPI)](https://pypi.org/project/touchstone.parser/)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/touchstone.parser?style=flat-square&logo=pypi)](https://pypi.org/project/touchstone.parser/)
 [![Build](https://img.shields.io/github/actions/workflow/status/suryakantamangaraj/touchstone-python/ci.yml?branch=main&style=flat-square&logo=github&label=CI)](https://github.com/suryakantamangaraj/touchstone-python/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/codecov/c/github/suryakantamangaraj/touchstone-python?style=flat-square&logo=codecov)](https://codecov.io/gh/suryakantamangaraj/touchstone-python)
 [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue?style=flat-square&logo=github)](https://suryakantamangaraj.github.io/touchstone-python/)
 [![License](https://img.shields.io/github/license/suryakantamangaraj/touchstone-python?style=flat-square)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.8%2B-512BD4?style=flat-square&logo=dotnet)](https://python.org/)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org/)
 
 **touchstone.parser** is a clean, modular, enterprise-ready Python library for parsing [Touchstone](https://ibis.org/) (`.sNp`) files — the industry-standard format for RF and microwave S‑parameter data. It provides strongly typed classes, LINQ-friendly APIs, and seamless integration into simulation and analysis workflows.
 
