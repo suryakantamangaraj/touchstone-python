@@ -1,3 +1,7 @@
+"""
+Data model for Touchstone parsed data.
+"""
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -22,26 +26,32 @@ class TouchstoneData:
     # Backward compatibility properties
     @property
     def z0(self) -> float:
+        """Reference impedance of the network."""
         return self.options.reference_impedance
 
     @property
     def unit(self) -> str:
+        """Frequency unit (e.g. 'Hz', 'GHz')."""
         return self.options.frequency_unit.value
 
     @property
     def parameter(self) -> str:
+        """Network parameter type (e.g. 'S', 'Y')."""
         return self.options.parameter_type.value
 
     @property
     def format(self) -> str:
+        """Data format (e.g. 'MA', 'RI')."""
         return self.options.data_format.value
 
     @property
     def n_ports(self) -> int:
+        """Number of ports in the network."""
         return self.s_parameters.shape[1]
 
     @property
     def n_freq(self) -> int:
+        """Number of frequency points."""
         return len(self.frequency)
 
     def __post_init__(self):
@@ -51,31 +61,75 @@ class TouchstoneData:
             )
 
     def get_s(self, to_port: int, from_port: int) -> np.ndarray:
+        """
+        Get the specific S-parameter (or Y, Z) array across all frequencies.
+        
+        Args:
+            to_port (int): The target port (1-indexed).
+            from_port (int): The source port (1-indexed).
+            
+        Returns:
+            np.ndarray: Complex array of the parameter values.
+        """
         if not (1 <= to_port <= self.n_ports and 1 <= from_port <= self.n_ports):
             raise IndexError(f"Port indices out of range [1, {self.n_ports}]")
         return self.s_parameters[:, to_port - 1, from_port - 1]
 
     def to_insertion_loss(self) -> np.ndarray:
+        """
+        Calculate insertion loss (positive dB) from S21.
+        
+        Returns:
+            np.ndarray: Array of insertion loss values in dB.
+        """
         from ..utilities.touchstone_data_extensions import to_insertion_loss as _il
 
         return _il(self)
 
     def to_return_loss(self) -> np.ndarray:
+        """
+        Calculate return loss (positive dB) from S11.
+        
+        Returns:
+            np.ndarray: Array of return loss values in dB.
+        """
         from ..utilities.touchstone_data_extensions import to_return_loss as _rl
 
         return _rl(self)
 
     def to_vswr(self) -> np.ndarray:
+        """
+        Calculate VSWR from S11.
+        
+        Returns:
+            np.ndarray: Array of VSWR values.
+        """
         from ..utilities.touchstone_data_extensions import to_vswr as _vswr
 
         return _vswr(self)
 
     def in_frequency_range(self, min_hz: float, max_hz: float) -> "TouchstoneData":
+        """
+        Filter the data to a specific frequency range.
+        
+        Args:
+            min_hz (float): Minimum frequency in Hz.
+            max_hz (float): Maximum frequency in Hz.
+            
+        Returns:
+            TouchstoneData: A new filtered instance.
+        """
         from ..utilities.touchstone_data_extensions import in_frequency_range as _ifr
 
         return _ifr(self, min_hz, max_hz)
 
     def to_csv_string(self) -> str:
+        """
+        Export the data to a CSV formatted string.
+        
+        Returns:
+            str: CSV string representation.
+        """
         import io
 
         output = io.StringIO()
@@ -88,7 +142,7 @@ class TouchstoneData:
 
         # If writer is a string, open it as a file
         if isinstance(writer, str):
-            with open(writer, "w", newline="") as f:
+            with open(writer, "w", newline="", encoding="utf-8") as f:
                 self._write_csv(f)
         else:
             self._write_csv(writer)

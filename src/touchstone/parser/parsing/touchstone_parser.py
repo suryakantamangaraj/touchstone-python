@@ -1,3 +1,7 @@
+"""
+Core Touchstone file parser.
+"""
+
 import os
 import re
 from typing import List, Optional
@@ -18,6 +22,8 @@ from .touchstone_parser_exception import TouchstoneParserException
 
 
 class TouchstoneParser:
+    """Parser for reading Touchstone (.sNp) files into structured data."""
+
     @staticmethod
     def _infer_n_ports(total_numbers: int) -> int:
         for n in range(1, 9):
@@ -114,6 +120,18 @@ class TouchstoneParser:
 
     @staticmethod
     def parse(filepath: str) -> TouchstoneData:
+        """
+        Parse a Touchstone file from disk.
+
+        Args:
+            filepath (str): Path to the .sNp file.
+
+        Returns:
+            TouchstoneData: The parsed data.
+
+        Raises:
+            TouchstoneParserException: If the file extension is invalid.
+        """
         filename = os.path.basename(filepath)
         ext_match = re.search(r"\.s(\d+)p$", filename.lower())
         if not ext_match:
@@ -123,7 +141,7 @@ class TouchstoneParser:
 
         n_ports = int(ext_match.group(1))
 
-        with open(filepath, "r") as f:
+        with open(filepath, "r", encoding="utf-8") as f:
             lines = f.readlines()
 
         return TouchstoneParser._parse_lines(lines, n_ports=n_ports, filename=filename)
@@ -132,5 +150,16 @@ class TouchstoneParser:
     def parse_string(
         content: str, n_ports: int = 0, filename: Optional[str] = None
     ) -> TouchstoneData:
+        """
+        Parse Touchstone data from a string.
+
+        Args:
+            content (str): The raw Touchstone file content.
+            n_ports (int): Number of ports. 0 to auto-detect.
+            filename (Optional[str]): Optional filename for metadata.
+
+        Returns:
+            TouchstoneData: The parsed data.
+        """
         lines = content.splitlines()
         return TouchstoneParser._parse_lines(lines, n_ports=n_ports, filename=filename)

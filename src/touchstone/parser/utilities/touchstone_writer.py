@@ -1,3 +1,7 @@
+"""
+Utilities for writing Touchstone data back to the .sNp file format.
+"""
+
 import io
 from typing import Any, List, Optional
 
@@ -33,14 +37,32 @@ def _append_parameter(parts: List[str], s: complex, fmt: DataFormat):
 def write_snp(
     data: TouchstoneData, filepath: str, options: Optional[TouchstoneOptions] = None
 ) -> None:
+    """
+    Write Touchstone data to a file.
+
+    Args:
+        data (TouchstoneData): The data to write.
+        filepath (str): The destination file path.
+        options (Optional[TouchstoneOptions]): Export options. Defaults to data.options.
+    """
     content = write_snp_to_string(data, options)
-    with open(filepath, "w") as f:
+    with open(filepath, "w", encoding="utf-8") as f:
         f.write(content)
 
 
 def write_snp_to_string(
     data: TouchstoneData, options: Optional[TouchstoneOptions] = None
 ) -> str:
+    """
+    Convert Touchstone data to its string representation.
+
+    Args:
+        data (TouchstoneData): The data to convert.
+        options (Optional[TouchstoneOptions]): Export options. Defaults to data.options.
+
+    Returns:
+        str: The raw Touchstone file content as a string.
+    """
     if options is None:
         options = data.options
 
