@@ -1,7 +1,11 @@
 import pytest
 import numpy as np
 
-from touchstone.parser import TouchstoneParser, TouchstoneParserException, TouchstoneData
+from touchstone.parser import (
+    TouchstoneParser,
+    TouchstoneParserException,
+    TouchstoneData,
+)
 
 
 def test_missing_file_throws():
@@ -35,8 +39,7 @@ def test_invalid_numeric_data_throws():
 def test_touchstone_data_zero_ports_throws():
     with pytest.raises(ValueError, match="Number of ports must be >= 1"):
         TouchstoneData(
-            frequency=np.array([]),
-            s_parameters=np.zeros((0, 0, 0), dtype=complex)
+            frequency=np.array([]), s_parameters=np.zeros((0, 0, 0), dtype=complex)
         )
 
 
@@ -45,7 +48,7 @@ def test_touchstone_data_null_options_throws():
         TouchstoneData(
             frequency=np.array([]),
             s_parameters=np.zeros((0, 1, 1), dtype=complex),
-            options=None
+            options=None,
         )
 
 

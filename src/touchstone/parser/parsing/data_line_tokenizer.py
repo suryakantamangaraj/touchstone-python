@@ -40,4 +40,6 @@ class DataLineTokenizer:
                     try:
                         yield float(part)
                     except ValueError:
-                        raise TouchstoneParserException(f"Invalid numeric value: '{part}'", line_idx)
+                        raise TouchstoneParserException(
+                            f"Invalid numeric value: '{part}'", line_idx
+                        )

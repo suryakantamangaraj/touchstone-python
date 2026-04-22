@@ -54,7 +54,9 @@ class TouchstoneParser:
             clean_line = line.split("!")[0].strip()
             if clean_line.startswith("#"):
                 if options is not None:
-                    raise TouchstoneParserException("Multiple option lines found", line_idx)
+                    raise TouchstoneParserException(
+                        "Multiple option lines found", line_idx
+                    )
                 options = OptionLineParser.parse(clean_line)
 
         if options is None:
@@ -191,9 +193,7 @@ class TouchstoneParser:
         return TouchstoneParser._parse_lines(lines, n_ports=n_ports, filename=filename)
 
     @staticmethod
-    def parse_stream(
-        stream: TextIO, filename: Optional[str] = None
-    ) -> TouchstoneData:
+    def parse_stream(stream: TextIO, filename: Optional[str] = None) -> TouchstoneData:
         """
         Parse Touchstone data from a text stream (e.g., io.StringIO).
 

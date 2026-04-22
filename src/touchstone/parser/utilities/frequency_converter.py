@@ -33,7 +33,11 @@ def from_hz(value: float, unit: Union[str, FrequencyUnit]) -> float:
     return value / get_multiplier(unit)
 
 
-def convert(value: float, from_unit: Union[str, FrequencyUnit], to_unit: Union[str, FrequencyUnit]) -> float:
+def convert(
+    value: float,
+    from_unit: Union[str, FrequencyUnit],
+    to_unit: Union[str, FrequencyUnit],
+) -> float:
     """Convert a frequency value between two units."""
     hz = value * get_multiplier(from_unit)
     return from_hz(hz, to_unit)

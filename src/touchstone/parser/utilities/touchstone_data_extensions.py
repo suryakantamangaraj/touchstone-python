@@ -156,4 +156,3 @@ def max_frequency_hz(data: TouchstoneData) -> float:
     if data.n_freq == 0:
         raise ValueError("Touchstone data contains no frequency points.")
     return float(np.max(data.frequency))
-

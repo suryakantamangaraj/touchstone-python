@@ -105,7 +105,9 @@ class TouchstoneData:
 
         return FrequencyPoint(self.frequency[index], self.s_parameters[index])
 
-    def get_parameter(self, row: int, col: int) -> Iterable[Tuple[float, "NetworkParameter"]]:
+    def get_parameter(
+        self, row: int, col: int
+    ) -> Iterable[Tuple[float, "NetworkParameter"]]:
         """
         Get an iterable of (FrequencyHz, NetworkParameter) for the specific row and column (1-indexed).
         """
@@ -185,7 +187,11 @@ class TouchstoneData:
 
         return _ifr(self, min_hz, max_hz)
 
-    def to_csv_string(self, format: Optional["DataFormat"] = None, unit: Optional["FrequencyUnit"] = None) -> str:
+    def to_csv_string(
+        self,
+        format: Optional["DataFormat"] = None,
+        unit: Optional["FrequencyUnit"] = None,
+    ) -> str:
         """
         Export the data to a CSV formatted string.
 
@@ -202,7 +208,12 @@ class TouchstoneData:
         self.to_csv(output, format=format, unit=unit)
         return output.getvalue()
 
-    def to_csv(self, writer: Any, format: Optional["DataFormat"] = None, unit: Optional["FrequencyUnit"] = None) -> None:
+    def to_csv(
+        self,
+        writer: Any,
+        format: Optional["DataFormat"] = None,
+        unit: Optional["FrequencyUnit"] = None,
+    ) -> None:
         """Writes the data to a CSV file-like object or filepath."""
         # If writer is a string, open it as a file
         if isinstance(writer, str):
@@ -211,7 +222,12 @@ class TouchstoneData:
         else:
             self._write_csv(writer, format, unit)
 
-    def _write_csv(self, file_obj: Any, fmt: Optional["DataFormat"] = None, unit: Optional["FrequencyUnit"] = None) -> None:
+    def _write_csv(
+        self,
+        file_obj: Any,
+        fmt: Optional["DataFormat"] = None,
+        unit: Optional["FrequencyUnit"] = None,
+    ) -> None:
         import csv
         from .data_format import DataFormat
         from .frequency_unit import FrequencyUnit

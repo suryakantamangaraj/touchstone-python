@@ -56,7 +56,9 @@ class NetworkParameter:
         return cls(complex(real, imaginary))
 
     @classmethod
-    def from_magnitude_angle(cls, magnitude: float, angle_degrees: float) -> "NetworkParameter":
+    def from_magnitude_angle(
+        cls, magnitude: float, angle_degrees: float
+    ) -> "NetworkParameter":
         """Create from linear magnitude and angle in degrees."""
         import cmath
 
@@ -64,7 +66,9 @@ class NetworkParameter:
         return cls(cmath.rect(magnitude, rad))
 
     @classmethod
-    def from_decibel_angle(cls, magnitude_db: float, angle_degrees: float) -> "NetworkParameter":
+    def from_decibel_angle(
+        cls, magnitude_db: float, angle_degrees: float
+    ) -> "NetworkParameter":
         """Create from magnitude in dB and angle in degrees."""
         magnitude = 10.0 ** (magnitude_db / 20.0)
         return cls.from_magnitude_angle(magnitude, angle_degrees)
@@ -79,27 +83,37 @@ class NetworkParameter:
             raise ZeroDivisionError("Cannot compute the reciprocal of zero.")
         return NetworkParameter(1.0 / self.value)
 
-    def __add__(self, other: Union["NetworkParameter", complex, float, int]) -> "NetworkParameter":
+    def __add__(
+        self, other: Union["NetworkParameter", complex, float, int]
+    ) -> "NetworkParameter":
         if isinstance(other, NetworkParameter):
             return NetworkParameter(self.value + other.value)
         return NetworkParameter(self.value + other)
 
-    def __sub__(self, other: Union["NetworkParameter", complex, float, int]) -> "NetworkParameter":
+    def __sub__(
+        self, other: Union["NetworkParameter", complex, float, int]
+    ) -> "NetworkParameter":
         if isinstance(other, NetworkParameter):
             return NetworkParameter(self.value - other.value)
         return NetworkParameter(self.value - other)
 
-    def __mul__(self, other: Union["NetworkParameter", complex, float, int]) -> "NetworkParameter":
+    def __mul__(
+        self, other: Union["NetworkParameter", complex, float, int]
+    ) -> "NetworkParameter":
         if isinstance(other, NetworkParameter):
             return NetworkParameter(self.value * other.value)
         return NetworkParameter(self.value * other)
 
-    def __truediv__(self, other: Union["NetworkParameter", complex, float, int]) -> "NetworkParameter":
+    def __truediv__(
+        self, other: Union["NetworkParameter", complex, float, int]
+    ) -> "NetworkParameter":
         if isinstance(other, NetworkParameter):
             return NetworkParameter(self.value / other.value)
         return NetworkParameter(self.value / other)
 
-    def approximately_equals(self, other: "NetworkParameter", tolerance: float = 1e-9) -> bool:
+    def approximately_equals(
+        self, other: "NetworkParameter", tolerance: float = 1e-9
+    ) -> bool:
         """Check if two parameters are approximately equal within a tolerance."""
         return abs(self.value - other.value) <= tolerance
 
