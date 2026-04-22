@@ -1,5 +1,6 @@
 import numpy as np
 from touchstone.parser import read_snp
+from touchstone.parser.utilities.touchstone_data_extensions import get_magnitude, get_phase
 
 
 def create_dummy_s2p(filename):
@@ -24,11 +25,11 @@ def main():
     print(f"Frequencies (Hz): {data.frequency}")
 
     # Access S21 magnitude in dB
-    s21_db = data.magnitude(2, 1, db=True)
+    s21_db = get_magnitude(data, 2, 1, db=True)
     print(f"S21 Magnitude (dB): {s21_db}")
 
     # Access S11 phase in degrees
-    s11_phase = data.phase(1, 1, deg=True)
+    s11_phase = get_phase(data, 1, 1, deg=True)
     print(f"S11 Phase (deg): {s11_phase}")
 
     # Get the raw S-parameter matrix at the first frequency point
@@ -41,7 +42,7 @@ def main():
 
         print("\nGenerating S21 Magnitude plot...")
         plt.figure(figsize=(10, 6))
-        plt.plot(data.frequency / 1e9, data.magnitude(2, 1), label="S21 (dB)")
+        plt.plot(data.frequency / 1e9, get_magnitude(data, 2, 1, db=True), label="S21 (dB)")
         plt.title("S-Parameter Analysis")
         plt.xlabel("Frequency (GHz)")
         plt.ylabel("Magnitude (dB)")
