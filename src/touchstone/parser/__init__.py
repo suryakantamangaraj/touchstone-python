@@ -1,3 +1,7 @@
+"""
+Main package for parsing Touchstone (.sNp) files and analyzing S-parameters.
+"""
+
 from .models.data_format import DataFormat
 from .models.frequency_unit import FrequencyUnit
 from .models.parameter_type import ParameterType

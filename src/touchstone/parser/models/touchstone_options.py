@@ -1,3 +1,7 @@
+"""
+Data classes representing options parsed from Touchstone files.
+"""
+
 from dataclasses import dataclass
 
 from .data_format import DataFormat

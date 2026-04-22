@@ -1,3 +1,7 @@
+"""
+Parser for the option line in Touchstone files.
+"""
+
 from ..models.data_format import DataFormat
 from ..models.frequency_unit import FrequencyUnit
 from ..models.parameter_type import ParameterType
@@ -5,8 +9,19 @@ from ..models.touchstone_options import TouchstoneOptions
 
 
 class OptionLineParser:
+    """Parses the '#' option line from a Touchstone file."""
+
     @staticmethod
     def parse(line: str) -> TouchstoneOptions:
+        """
+        Parse a Touchstone option line into a TouchstoneOptions object.
+
+        Args:
+            line (str): The option line string (e.g., '# GHz S MA R 50').
+
+        Returns:
+            TouchstoneOptions: The parsed options.
+        """
         freq_unit = FrequencyUnit.GHZ
         param_type = ParameterType.S
         data_format = DataFormat.MA
