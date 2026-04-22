@@ -1,5 +1,5 @@
 import io
-from typing import List, Optional
+from typing import Any, List, Optional
 
 import numpy as np
 
@@ -9,7 +9,7 @@ from ..models.touchstone_data import TouchstoneData
 from ..models.touchstone_options import TouchstoneOptions
 
 
-def _format_value(value: float) -> str:
+def _format_value(value: Any) -> str:
     return f"{value:.10g}"
 
 
