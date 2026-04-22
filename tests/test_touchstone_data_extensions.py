@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from touchstone.parser import TouchstoneData
 from touchstone.parser.utilities.touchstone_data_extensions import (
     get_magnitude,

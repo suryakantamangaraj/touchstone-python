@@ -1,4 +1,5 @@
 import pytest
+
 from touchstone.parser.parsing.option_line_parser import OptionLineParser
 
 

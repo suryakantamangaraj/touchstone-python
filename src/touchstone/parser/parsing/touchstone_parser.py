@@ -4,6 +4,7 @@ from typing import List, Optional
 
 import numpy as np
 
+from ..models.data_format import DataFormat
 from ..models.touchstone_data import TouchstoneData
 from ..utilities.frequency_converter import normalize_frequency
 from ..utilities.network_parameter_extensions import (
@@ -13,7 +14,6 @@ from ..utilities.network_parameter_extensions import (
 )
 from .data_line_tokenizer import DataLineTokenizer
 from .option_line_parser import OptionLineParser
-from ..models.data_format import DataFormat
 from .touchstone_parser_exception import TouchstoneParserException
 
 

@@ -1,5 +1,6 @@
 import pytest
-from touchstone.parser import db_to_mag, mag_to_db, deg_to_rad, rad_to_deg
+
+from touchstone.parser import db_to_mag, deg_to_rad, mag_to_db, rad_to_deg
 
 
 def test_network_parameter_conversions():

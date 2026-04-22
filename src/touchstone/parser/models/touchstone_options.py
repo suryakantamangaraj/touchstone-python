@@ -1,7 +1,8 @@
 from dataclasses import dataclass
+
+from .data_format import DataFormat
 from .frequency_unit import FrequencyUnit
 from .parameter_type import ParameterType
-from .data_format import DataFormat
 
 
 @dataclass(frozen=True)

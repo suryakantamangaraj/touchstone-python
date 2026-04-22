@@ -1,4 +1,5 @@
 import numpy as np
+
 from ..models.touchstone_data import TouchstoneData
 from .network_parameter_extensions import mag_to_db, rad_to_deg
 
