@@ -25,3 +25,8 @@ class TouchstoneOptions:
             f"# {self.frequency_unit.name} {self.parameter_type.name} "
             f"{self.data_format.name} R {self.reference_impedance}"
         )
+
+    @classmethod
+    def default(cls) -> "TouchstoneOptions":
+        """Get the default Touchstone options."""
+        return cls()
