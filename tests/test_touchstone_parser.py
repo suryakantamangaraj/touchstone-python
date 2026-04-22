@@ -34,8 +34,8 @@ def test_parse_comments_only_s2p():
     assert len(data.comments) > 0
 
 
-import io
 import asyncio
+import io
 
 
 def test_parse_stream():

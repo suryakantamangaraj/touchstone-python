@@ -1,10 +1,10 @@
-import pytest
 import numpy as np
+import pytest
 
 from touchstone.parser import (
+    TouchstoneData,
     TouchstoneParser,
     TouchstoneParserException,
-    TouchstoneData,
 )
 
 

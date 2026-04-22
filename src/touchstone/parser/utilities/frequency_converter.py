@@ -3,6 +3,7 @@ Utility for frequency conversions.
 """
 
 from typing import Union
+
 from ..models.frequency_unit import FrequencyUnit
 
 

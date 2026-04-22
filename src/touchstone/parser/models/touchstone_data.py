@@ -3,7 +3,7 @@ Data model for Touchstone parsed data.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional, Tuple
 
 import numpy as np
 
@@ -229,9 +229,10 @@ class TouchstoneData:
         unit: Optional["FrequencyUnit"] = None,
     ) -> None:
         import csv
+
+        from ..utilities.frequency_converter import get_multiplier
         from .data_format import DataFormat
         from .frequency_unit import FrequencyUnit
-        from ..utilities.frequency_converter import get_multiplier
 
         writer = csv.writer(file_obj)
 
