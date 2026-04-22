@@ -24,10 +24,8 @@
 - **LINQ-friendly APIs** — query S‑parameters with `GetS11()`, `GetS21()`, `GetParameter(i, j)`
 - **RF calculations** — insertion loss, return loss, VSWR out of the box
 - **Export utilities** — CSV export and Touchstone writer for round-trip fidelity
-- **Async support** — `ParseAsync()` with cancellation token
-- **Cross-platform** — targets `net6.0` and `netstandard2.1`
-- **Ecosystem breadth** — check out the [Python version](https://github.com/suryakantamangaraj/touchstone-python) for Python-based workflows
 - **Zero dependencies** — pure Python, no external packages
+
 
 ---
 
@@ -47,36 +45,31 @@ pip install touchstone.parser
 
 ## 🚀 Quick Start
 
-```csharp
-using touchstone.parser.Parsing;
-using touchstone.parser.Utilities;
-using touchstone.parser.Models;
+```python
+from touchstone.parser import TouchstoneParser
 
-// Parse a Touchstone file
-var data = TouchstoneParser.Parse("filter.s2p");
+# Parse a Touchstone file
+data = TouchstoneParser.parse("filter.s2p")
 
-Console.WriteLine($"Ports: {data.NumberOfPorts}");
-Console.WriteLine($"Frequency points: {data.Count}");
+print(f"Ports: {data.n_ports}")
+print(f"Frequency points: {data.n_freq}")
 
-// Query S21 insertion loss with LINQ
-foreach (var (freqHz, param) in data.GetS21())
-{
-    double freqGhz = FrequencyConverter.FromHz(freqHz, FrequencyUnit.GHz);
-    Console.WriteLine($"{freqGhz:F3} GHz → S21 = {param.MagnitudeDb:F2} dB");
-}
+# Query S21 insertion loss
+il = data.to_insertion_loss()
+for f, val in zip(data.frequency, il):
+    freq_ghz = f / 1e9
+    print(f"{freq_ghz:.3f} GHz → IL = {val:.2f} dB")
 
-// Filter to a frequency range
-var passband = data.InFrequencyRange(2.0e9, 3.0e9);
+# Filter to a frequency range
+passband = data.in_frequency_range(2.0e9, 3.0e9)
 
-// Compute VSWR
-foreach (var (freqHz, vswr) in data.ToVswr())
-{
-    Console.WriteLine($"VSWR = {vswr:F3}");
-}
+# Compute VSWR
+vswr = data.to_vswr()
+for f, val in zip(data.frequency, vswr):
+    print(f"VSWR = {val:.3f}")
 
-// Export to CSV
-using var writer = new StreamWriter("output.csv");
-data.ToCsv(writer, FrequencyUnit.GHz, DataFormat.DecibelAngle);
+# Export to CSV
+data.to_csv("output.csv")
 ```
 
 ---
@@ -87,48 +80,43 @@ data.ToCsv(writer, FrequencyUnit.GHz, DataFormat.DecibelAngle);
 
 | Method | Description |
 |--------|-------------|
-| `TouchstoneParser.Parse(filePath)` | Parse from a file path |
-| `TouchstoneParser.Parse(stream, fileName?)` | Parse from a stream |
-| `TouchstoneParser.Parse(textReader, fileName?)` | Parse from a TextReader |
-| `TouchstoneParser.ParseString(content, fileName?)` | Parse from a raw string |
-| `TouchstoneParser.ParseAsync(filePath, ct)` | Async file parsing |
+| `TouchstoneParser.parse(filepath)` | Parse from a file path |
+| `TouchstoneParser.parse_string(content, n_ports?)` | Parse from a raw string |
 
-### Data Access (LINQ-friendly)
+### Data Access
 
 | Method | Description |
 |--------|-------------|
-| `data.GetParameter(row, col)` | Get any S‑parameter across all frequencies |
-| `data.GetS11()` / `GetS21()` / `GetS12()` / `GetS22()` | Common 2‑port shortcuts |
-| `data.Frequencies` | All frequency values in Hz |
-| `data.GetFrequenciesIn(FrequencyUnit.GHz)` | Frequencies in any unit |
-| `data[index]` | Access a specific frequency point |
+| `data.get_s(to_port, from_port)` | Get S‑parameters across all frequencies |
+| `data.frequency` | All frequency values in Hz |
+| `data.s_parameters` | 3D numpy array of all parameters |
 
 ### RF Calculations
 
 | Method | Description |
 |--------|-------------|
-| `data.ToInsertionLoss()` | \|S21\| insertion loss in dB |
-| `data.ToReturnLoss()` | \|S11\| return loss in dB |
-| `data.ToVswr()` | VSWR from S11 |
+| `data.to_insertion_loss()` | \|S21\| insertion loss in dB |
+| `data.to_return_loss()` | \|S11\| return loss in dB |
+| `data.to_vswr()` | VSWR from S11 |
 
 ### Filtering & Export
 
 | Method | Description |
 |--------|-------------|
-| `data.InFrequencyRange(minHz, maxHz)` | Filter to frequency range |
-| `data.Where(predicate)` | Custom filtering |
-| `data.ToCsv(writer, unit, format)` | Export to CSV |
-| `data.ToCsvString(unit, format)` | Export to CSV string |
-| `TouchstoneWriter.Write(data, filePath)` | Write back to Touchstone format |
+| `data.in_frequency_range(min_hz, max_hz)` | Filter to frequency range |
+| `data.to_csv(writer)` | Export to CSV file or path |
+| `data.to_csv_string()` | Export to CSV string |
+| `write_snp(data, filepath)` | Write back to Touchstone format |
 
 ### Utilities
 
 | Method | Description |
 |--------|-------------|
-| `FrequencyConverter.Convert(val, from, to)` | Convert between frequency units |
-| `NetworkParameter.FromRealImaginary(re, im)` | Create from RI |
-| `NetworkParameter.FromMagnitudeAngle(mag, deg)` | Create from MA |
-| `NetworkParameter.FromDecibelAngle(dB, deg)` | Create from DB |
+| `normalize_frequency(val, unit)` | Convert to Hz |
+| `db_to_mag(db)` | Convert DB to magnitude |
+| `mag_to_db(mag)` | Convert magnitude to DB |
+| `ma_to_complex(mag, deg)` | Create from MA |
+| `db_to_complex(dB, deg)` | Create from DB |
 
 ---
 

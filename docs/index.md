@@ -15,17 +15,15 @@ pip install touchstone.parser
 Then parse your first file:
 
 ```python
-from touchstone.parser import read_snp
-from touchstone.parser import get_magnitude
+from touchstone.parser import TouchstoneParser
 
-data = read_snp("filter.s2p")
+data = TouchstoneParser.parse("filter.s2p")
 
-# Query S21
-mag_db = get_magnitude(data, 2, 1, db=True)
-
-for i in range(len(data.frequency)):
-    freq_ghz = data.frequency[i] / 1e9
-    print(f"{freq_ghz:.3f} GHz -> S21 = {mag_db[i]:.2f} dB")
+# Query S21 insertion loss
+il = data.to_insertion_loss()
+for f, val in zip(data.frequency, il):
+    freq_ghz = f / 1e9
+    print(f"{freq_ghz:.3f} GHz -> IL = {val:.2f} dB")
 ```
 
 For more details, see the [README on GitHub](https://github.com/suryakantamangaraj/touchstone-python).

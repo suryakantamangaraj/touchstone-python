@@ -31,3 +31,9 @@ def db_to_complex(db: float, angle_deg: float) -> complex:
 
 def ri_to_complex(real: float, imag: float) -> complex:
     return complex(real, imag)
+
+
+def vswr_from_s11(s11: Any) -> Any:
+    mag = np.abs(s11)
+    # Avoid division by zero by setting a small epsilon
+    return (1 + mag) / np.maximum(1 - mag, 1e-10)
