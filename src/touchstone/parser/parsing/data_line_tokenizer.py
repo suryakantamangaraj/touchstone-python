@@ -5,6 +5,8 @@ Tokenizer for parsing numerical data from Touchstone files.
 import re
 from typing import Iterable, Iterator
 
+from .touchstone_parser_exception import TouchstoneParserException
+
 
 class DataLineTokenizer:
     """
@@ -24,8 +26,11 @@ class DataLineTokenizer:
 
         Yields:
             float: The parsed numerical values.
+
+        Raises:
+            TouchstoneParserException: If a numeric value cannot be parsed.
         """
-        for line in lines:
+        for line_idx, line in enumerate(lines, start=1):
             clean_line = line.split("!")[0].strip()
             if not clean_line or clean_line.startswith("#"):
                 continue
@@ -35,4 +40,4 @@ class DataLineTokenizer:
                     try:
                         yield float(part)
                     except ValueError:
-                        continue
+                        raise TouchstoneParserException(f"Invalid numeric value: '{part}'", line_idx)
