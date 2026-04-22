@@ -227,4 +227,3 @@ class TouchstoneParser:
         import asyncio
 
         return await asyncio.to_thread(TouchstoneParser.parse, filepath)
-
