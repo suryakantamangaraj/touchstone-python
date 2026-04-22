@@ -32,3 +32,33 @@ def test_parse_comments_only_s2p():
     assert data.n_ports == 2
     assert data.n_freq >= 0
     assert len(data.comments) > 0
+
+
+import io
+import asyncio
+
+
+def test_parse_stream():
+    content = "# GHZ S MA R 50\n50 1 0"
+    stream = io.StringIO(content)
+    data = TouchstoneParser.parse_stream(stream, filename="test.s1p")
+    assert data.n_ports == 1
+    assert data.n_freq == 1
+
+
+def test_parse_async():
+    filepath = get_test_file("simple.s1p")
+    data = asyncio.run(TouchstoneParser.parse_async(filepath))
+    assert data.n_ports == 1
+    assert data.n_freq > 0
+
+
+def test_detect_port_count():
+    assert TouchstoneParser.detect_port_count("filter.s2p") == 2
+    assert TouchstoneParser.detect_port_count("amp.S4P") == 4
+    assert TouchstoneParser.detect_port_count("network.s12p") == 12
+
+
+def test_detect_port_count_invalid():
+    with pytest.raises(Exception):
+        TouchstoneParser.detect_port_count("filter.txt")
