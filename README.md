@@ -21,10 +21,10 @@
 - **All data formats** — Real/Imaginary (RI), Magnitude/Angle (MA), Decibel/Angle (DB)
 - **All frequency units** — Hz, kHz, MHz, GHz with automatic normalization
 - **All parameter types** — S, Y, Z, H, G
-- **LINQ-friendly APIs** — query S‑parameters with `GetS11()`, `GetS21()`, `GetParameter(i, j)`
+- **LINQ-friendly APIs** — query S‑parameters with `get_s11(data)`, `get_s21(data)`, `data.get_parameter(r, c)`
 - **RF calculations** — insertion loss, return loss, VSWR out of the box
 - **Export utilities** — CSV export and Touchstone writer for round-trip fidelity
-- **Zero dependencies** — pure Python, no external packages
+- **Minimal dependencies** — powered by `numpy` for fast array operations
 
 
 ---
@@ -56,7 +56,7 @@ print(f"Frequency points: {data.n_freq}")
 
 # Query S21 insertion loss
 il = data.to_insertion_loss()
-for f, val in zip(data.frequency, il):
+for f, val in zip(data.frequencies, il):
     freq_ghz = f / 1e9
     print(f"{freq_ghz:.3f} GHz → IL = {val:.2f} dB")
 
@@ -65,7 +65,7 @@ passband = data.in_frequency_range(2.0e9, 3.0e9)
 
 # Compute VSWR
 vswr = data.to_vswr()
-for f, val in zip(data.frequency, vswr):
+for f, val in zip(data.frequencies, vswr):
     print(f"VSWR = {val:.3f}")
 
 # Export to CSV
@@ -195,6 +195,7 @@ If this library helps you in your RF/microwave engineering work, consider suppor
 - [Touchstone File Format Specification (IBIS)](https://ibis.org/)
 - [S-parameter — Wikipedia](https://en.wikipedia.org/wiki/Scattering_parameters)
 - [PyPI Package](https://www.pypi.org/packages/touchstone.parser)
+- [Touchstone .NET Library](https://github.com/suryakantamangaraj/touchstone-dotnet) - check out the .NET version for C#-based workflows.
 
 ---
 
