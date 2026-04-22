@@ -3,7 +3,7 @@ FrequencyPoint class representing a single frequency point and its S-parameters.
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Tuple
 
 import numpy as np
 
@@ -44,12 +44,12 @@ class FrequencyPoint:
         """
         return self._s_parameters.copy()
 
-    def __getitem__(self, indices: tuple[int, int]) -> NetworkParameter:
+    def __getitem__(self, indices: Tuple[int, int]) -> NetworkParameter:
         """
         Access a specific network parameter by [row, col] index (0-indexed).
 
         Args:
-            indices (tuple[int, int]): The (row, col) indices.
+            indices (Tuple[int, int]): The (row, col) indices.
 
         Returns:
             NetworkParameter: The network parameter at the specified index.

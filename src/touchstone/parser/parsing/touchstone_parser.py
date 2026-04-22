@@ -225,5 +225,12 @@ class TouchstoneParser:
             TouchstoneData: The parsed data.
         """
         import asyncio
+        import sys
 
-        return await asyncio.to_thread(TouchstoneParser.parse, filepath)
+        if sys.version_info >= (3, 9):
+            return await asyncio.to_thread(TouchstoneParser.parse, filepath)
+        else:
+            loop = asyncio.get_event_loop()
+            return await loop.run_in_executor(
+                None, TouchstoneParser.parse, filepath
+            )
