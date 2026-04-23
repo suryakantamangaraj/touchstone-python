@@ -2,7 +2,7 @@ site_name: touchstone.parser
 site_description: Python library for Touchstone .sNp parsing and S-parameter analysis in RF/microwave engineering.
 site_author: Surya Mangaraj
 repo_url: https://github.com/suryakantamangaraj/touchstone-python
-
+copyright: Copyright &copy; 2026 <a href="https://suryaraj.com" target="_blank" rel="noopener">Surya Raj</a>
 theme:
   name: material
   palette:
