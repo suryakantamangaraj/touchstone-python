@@ -1,0 +1,22 @@
+{% extends "!page.html" %}
+
+{% block footer %}
+<div class="bottom-of-page">
+  <div class="left-details">
+    <div class="copyright">
+      Copyright &#169; 2026, <a href="https://suryaraj.com" target="_blank">Surya Raj</a>
+    </div>
+  </div>
+  <div class="right-details">
+    <div class="icons">
+      {% if theme_footer_icons %}
+      {% for icon_dict in theme_footer_icons %}
+      <a class="muted-link {{ icon_dict.class }}" href="{{ icon_dict.url }}" aria-label="{{ icon_dict.name }}">
+        {{ icon_dict.html }}
+      </a>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock footer %}
