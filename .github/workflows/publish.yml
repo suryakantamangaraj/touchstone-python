@@ -19,6 +19,7 @@ jobs:
     permissions:
       contents: write
       id-token: write
+      packages: write
 
     steps:
       - name: Checkout
@@ -34,33 +35,69 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install build toml
+          pip install build twine
 
-      - name: Extract version
+      - name: Extract and bump version
         id: version
-        run: |
-          python -c "
-          import toml, os
-          override = os.environ.get('VERSION_OVERRIDE', '')
-          if override:
-              version = override
-          else:
-              data = toml.load('pyproject.toml')
-              version = data['project']['version']
-          
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-              f.write(f'VERSION={version}\n')
-          
-          exists = os.system(f'git rev-parse v{version} >/dev/null 2>&1') == 0
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-              exists_str = 'true' if exists else 'false'
-              f.write(f'EXISTS={exists_str}\n')
-          "
         env:
           VERSION_OVERRIDE: ${{ github.event.inputs.version_override }}
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG_NAME=${GITHUB_REF#refs/tags/v}
+            echo "VERSION=$TAG_NAME" >> $GITHUB_OUTPUT
+            echo "NEEDS_BUMP=false" >> $GITHUB_OUTPUT
+            echo "IS_TAG=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "IS_TAG=false" >> $GITHUB_OUTPUT
+          
+          python - <<'EOF'
+          import os, re
+          override = os.environ.get('VERSION_OVERRIDE', '')
+          with open('pyproject.toml', 'r') as f:
+              content = f.read()
+          match = re.search(r'version\s*=\s*"([^"]+)"', content)
+          if not match:
+              print('Could not find version in pyproject.toml')
+              exit(1)
+          current_version = match.group(1)
+
+          if override:
+              new_version = override
+              needs_bump = True
+          else:
+              exists = os.system(f'git rev-parse v{current_version} >/dev/null 2>&1') == 0
+              if exists:
+                  parts = current_version.split('.')
+                  parts[-1] = str(int(parts[-1]) + 1)
+                  new_version = '.'.join(parts)
+                  needs_bump = True
+              else:
+                  new_version = current_version
+                  needs_bump = False
+
+          if needs_bump:
+              new_content = content.replace(f'version = "{current_version}"', f'version = "{new_version}"')
+              with open('pyproject.toml', 'w') as f:
+                  f.write(new_content)
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'VERSION={new_version}\n')
+              f.write(f'NEEDS_BUMP={"true" if needs_bump else "false"}\n')
+          EOF
+
+      - name: Commit version bump
+        if: steps.version.outputs.NEEDS_BUMP == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add pyproject.toml
+          git commit -m "chore: bump version to ${{ steps.version.outputs.VERSION }} [skip ci]"
+          git push origin HEAD:main
 
       - name: Create Tag
-        if: github.ref == 'refs/heads/main' && steps.version.outputs.EXISTS == 'false'
+        if: steps.version.outputs.IS_TAG == 'false'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -71,7 +108,6 @@ jobs:
         run: python -m build
 
       - name: Create Release
-        if: steps.version.outputs.EXISTS == 'false' || startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.VERSION }}
@@ -84,7 +120,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish package to PyPI
-        if: steps.version.outputs.EXISTS == 'false' || startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN || '' }}
+        # Removing explicit 'password' configures the action to use PyPI Trusted Publishing (OIDC).
+
+      - name: Publish package to GitHub Packages
+        env:
+          TWINE_USERNAME: ${{ github.actor }}
+          TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m pip install twine
+          twine upload --repository-url https://pypi.pkg.github.com/${{ github.repository_owner }}/ dist/*
