@@ -122,11 +122,3 @@ jobs:
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         # Removing explicit 'password' configures the action to use PyPI Trusted Publishing (OIDC).
-
-      - name: Publish package to GitHub Packages
-        env:
-          TWINE_USERNAME: ${{ github.actor }}
-          TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python -m pip install twine
-          twine upload --repository-url https://pypi.pkg.github.com/${{ github.repository_owner }}/ dist/*
