@@ -1,5 +1,9 @@
 """
 Utilities for writing Touchstone data back to the .sNp file format.
+
+This module provides :func:`write_snp` and :func:`write_snp_to_string`
+for exporting :class:`~touchstone.parser.models.touchstone_data.TouchstoneData`
+back to the standard Touchstone text format with round-trip fidelity.
 """
 
 import io
@@ -14,10 +18,31 @@ from ..models.touchstone_options import TouchstoneOptions
 
 
 def _format_value(value: Any) -> str:
+    """Format a numeric value for Touchstone output.
+
+    Uses general format with up to 10 significant digits to maintain
+    precision while keeping output compact.
+
+    Args:
+        value: The numeric value to format.
+
+    Returns:
+        str: The formatted string representation.
+    """
     return f"{value:.10g}"
 
 
 def _append_parameter(parts: List[str], s: complex, fmt: DataFormat):
+    """Append a formatted complex parameter to the output parts list.
+
+    Converts the complex value to the specified data format (RI, MA, or DB)
+    and appends the two resulting numeric strings to ``parts``.
+
+    Args:
+        parts: The list of string parts to append to.
+        s: The complex S-parameter value.
+        fmt: The :class:`DataFormat` specifying the output representation.
+    """
     if fmt == DataFormat.RI:
         parts.append(_format_value(s.real))
         parts.append(_format_value(s.imag))
@@ -37,13 +62,16 @@ def _append_parameter(parts: List[str], s: complex, fmt: DataFormat):
 def write_snp(
     data: TouchstoneData, filepath: str, options: Optional[TouchstoneOptions] = None
 ) -> None:
-    """
-    Write Touchstone data to a file.
+    """Write Touchstone data to a file.
 
     Args:
-        data (TouchstoneData): The data to write.
-        filepath (str): The destination file path.
-        options (Optional[TouchstoneOptions]): Export options. Defaults to data.options.
+        data: The :class:`TouchstoneData` to write.
+        filepath: The destination file path (e.g., ``'output.s2p'``).
+        options: Optional :class:`TouchstoneOptions` to override the
+            export format. If ``None``, uses ``data.options``.
+
+    Example:
+        >>> write_snp(data, "output.s2p")
     """
     content = write_snp_to_string(data, options)
     with open(filepath, "w", encoding="utf-8") as f:
@@ -53,15 +81,23 @@ def write_snp(
 def write_snp_to_string(
     data: TouchstoneData, options: Optional[TouchstoneOptions] = None
 ) -> str:
-    """
-    Convert Touchstone data to its string representation.
+    """Convert Touchstone data to its string representation.
+
+    Produces a valid Touchstone file content string including comments,
+    the option line, and all data rows.
 
     Args:
-        data (TouchstoneData): The data to convert.
-        options (Optional[TouchstoneOptions]): Export options. Defaults to data.options.
+        data: The :class:`TouchstoneData` to convert.
+        options: Optional :class:`TouchstoneOptions` to override the
+            export format. If ``None``, uses ``data.options``.
 
     Returns:
         str: The raw Touchstone file content as a string.
+
+    Example:
+        >>> content = write_snp_to_string(data)
+        >>> print(content[:50])
+        # GHZ S MA R 50.0
     """
     if options is None:
         options = data.options

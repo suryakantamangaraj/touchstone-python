@@ -1,0 +1,9 @@
+/* Custom footer styling for Surya Raj attribution */
+.bottom-of-page .related-information a {
+    color: var(--color-brand-primary);
+    text-decoration: none;
+}
+
+.bottom-of-page .related-information a:hover {
+    text-decoration: underline;
+}

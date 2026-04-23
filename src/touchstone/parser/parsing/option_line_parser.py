@@ -1,5 +1,10 @@
 """
 Parser for the option line in Touchstone files.
+
+The option line starts with ``#`` and specifies the frequency unit,
+parameter type, data format, and reference impedance. This module
+provides the :class:`OptionLineParser` class with a static
+:meth:`~OptionLineParser.parse` method.
 """
 
 from ..models.data_format import DataFormat
@@ -9,18 +14,32 @@ from ..models.touchstone_options import TouchstoneOptions
 
 
 class OptionLineParser:
-    """Parses the '#' option line from a Touchstone file."""
+    """Parses the ``#`` option line from a Touchstone file.
+
+    The option line format is::
+
+        # <frequency_unit> <parameter_type> <data_format> R <impedance>
+
+    Tokens can appear in any order. Missing tokens are filled with
+    Touchstone defaults (GHz, S, MA, R 50).
+
+    Example:
+        >>> opts = OptionLineParser.parse("# GHz S MA R 50")
+        >>> opts.frequency_unit
+        <FrequencyUnit.GHZ: 'GHz'>
+    """
 
     @staticmethod
     def parse(line: str) -> TouchstoneOptions:
-        """
-        Parse a Touchstone option line into a TouchstoneOptions object.
+        """Parse a Touchstone option line into a :class:`TouchstoneOptions` object.
 
         Args:
-            line (str): The option line string (e.g., '# GHz S MA R 50').
+            line: The option line string, including the leading ``#``
+                (e.g., ``'# GHz S MA R 50'``). Inline comments
+                (text after ``!``) are stripped.
 
         Returns:
-            TouchstoneOptions: The parsed options.
+            TouchstoneOptions: The parsed options with all fields populated.
         """
         freq_unit = FrequencyUnit.GHZ
         param_type = ParameterType.S

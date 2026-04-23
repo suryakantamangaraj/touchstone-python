@@ -1,5 +1,10 @@
 """
 Data model for Touchstone parsed data.
+
+This module contains the :class:`TouchstoneData` dataclass, the primary
+container for all data parsed from a Touchstone (``.sNp``) file. It holds
+frequency arrays, S-parameter matrices, option line configuration,
+comments, and metadata.
 """
 
 from dataclasses import dataclass, field
@@ -18,12 +23,32 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True)
 class TouchstoneData:
-    """
-    Structured object representing Touchstone (.sNp) data.
+    """Structured object representing parsed Touchstone (.sNp) data.
+
+    This is the main output of :meth:`TouchstoneParser.parse` and
+    :meth:`TouchstoneParser.parse_string`. It is an immutable (frozen)
+    dataclass that provides rich access to the underlying data.
+
+    Attributes:
+        frequency: 1-D NumPy array of frequency values in Hz.
+        s_parameters: 3-D complex NumPy array of shape
+            ``(n_freq, n_ports, n_ports)``.
+        options: The parsed option line configuration.
+        comments: List of comment strings extracted from the file.
+        filename: The original filename, if known.
+        metadata: Arbitrary metadata dictionary for user extensions.
+
+    Example:
+        >>> data = TouchstoneParser.parse("filter.s2p")
+        >>> data.n_ports
+        2
+        >>> data.n_freq
+        201
+        >>> s21 = data.get_s(2, 1)
     """
 
-    frequency: np.ndarray  # 1D array of frequencies in Hz
-    s_parameters: np.ndarray  # 3D array: (n_freq, n_ports, n_ports)
+    frequency: np.ndarray
+    s_parameters: np.ndarray
     options: TouchstoneOptions = field(default_factory=TouchstoneOptions)
     comments: List[str] = field(default_factory=list)
     filename: Optional[str] = None
@@ -32,45 +57,84 @@ class TouchstoneData:
     # Backward compatibility properties
     @property
     def z0(self) -> float:
-        """Reference impedance of the network."""
+        """Reference impedance of the network in ohms.
+
+        Returns:
+            float: The reference impedance from the option line.
+        """
         return self.options.reference_impedance
 
     @property
     def unit(self) -> str:
-        """Frequency unit (e.g. 'Hz', 'GHz')."""
+        """Frequency unit string (e.g. ``'Hz'``, ``'GHz'``).
+
+        Returns:
+            str: The frequency unit value from the option line.
+        """
         return self.options.frequency_unit.value
 
     @property
     def parameter(self) -> str:
-        """Network parameter type (e.g. 'S', 'Y')."""
+        """Network parameter type string (e.g. ``'S'``, ``'Y'``).
+
+        Returns:
+            str: The parameter type value from the option line.
+        """
         return self.options.parameter_type.value
 
     @property
     def format(self) -> str:
-        """Data format (e.g. 'MA', 'RI')."""
+        """Data format string (e.g. ``'MA'``, ``'RI'``).
+
+        Returns:
+            str: The data format value from the option line.
+        """
         return self.options.data_format.value
 
     @property
     def n_ports(self) -> int:
-        """Number of ports in the network."""
+        """Number of ports in the network.
+
+        Returns:
+            int: The number of ports, derived from the S-parameter matrix shape.
+        """
         return self.s_parameters.shape[1]
 
     @property
     def n_freq(self) -> int:
-        """Number of frequency points."""
+        """Number of frequency points in the dataset.
+
+        Returns:
+            int: The length of the frequency array.
+        """
         return len(self.frequency)
 
     @property
     def frequencies(self) -> np.ndarray:
-        """Alias for frequency (compatibility with .NET)."""
+        """Alias for :attr:`frequency` (compatibility with .NET API).
+
+        Returns:
+            numpy.ndarray: The frequency array in Hz.
+        """
         return self.frequency
 
     @property
     def count(self) -> int:
-        """Alias for n_freq (compatibility with .NET)."""
+        """Alias for :attr:`n_freq` (compatibility with .NET API).
+
+        Returns:
+            int: The number of frequency points.
+        """
         return self.n_freq
 
     def __post_init__(self):
+        """Validate the data after initialization.
+
+        Raises:
+            ValueError: If any of the required fields are ``None``, if the
+                number of ports is less than 1, or if the frequency and
+                S-parameter array lengths do not match.
+        """
         if self.options is None:
             raise ValueError("options cannot be None")
         if self.frequency is None:
@@ -85,22 +149,38 @@ class TouchstoneData:
             )
 
     def get_s(self, to_port: int, from_port: int) -> np.ndarray:
-        """
-        Get the specific S-parameter (or Y, Z) array across all frequencies.
+        """Get a specific S-parameter array across all frequencies.
+
+        Extracts the complex-valued parameter ``S[to_port, from_port]``
+        for every frequency point.
 
         Args:
-            to_port (int): The target port (1-indexed).
-            from_port (int): The source port (1-indexed).
+            to_port: The target (output) port number, **1-indexed**.
+            from_port: The source (input) port number, **1-indexed**.
 
         Returns:
-            np.ndarray: Complex array of the parameter values.
+            numpy.ndarray: 1-D complex array of length :attr:`n_freq`.
+
+        Raises:
+            IndexError: If port indices are out of range ``[1, n_ports]``.
+
+        Example:
+            >>> s21 = data.get_s(to_port=2, from_port=1)
         """
         if not (1 <= to_port <= self.n_ports and 1 <= from_port <= self.n_ports):
             raise IndexError(f"Port indices out of range [1, {self.n_ports}]")
         return self.s_parameters[:, to_port - 1, from_port - 1]
 
     def __getitem__(self, index: int) -> "FrequencyPoint":
-        """Access the FrequencyPoint at the given index."""
+        """Access the :class:`FrequencyPoint` at the given index.
+
+        Args:
+            index: Zero-based index into the frequency array.
+
+        Returns:
+            FrequencyPoint: The frequency point containing the frequency
+            value and the N × N S-parameter matrix at that index.
+        """
         from .frequency_point import FrequencyPoint
 
         return FrequencyPoint(self.frequency[index], self.s_parameters[index])
@@ -108,8 +188,18 @@ class TouchstoneData:
     def get_parameter(
         self, row: int, col: int
     ) -> Iterable[Tuple[float, "NetworkParameter"]]:
-        """
-        Get an iterable of (FrequencyHz, NetworkParameter) for the specific row and column (1-indexed).
+        """Iterate over (frequency, NetworkParameter) pairs for a specific matrix entry.
+
+        Args:
+            row: The row index of the parameter matrix, **1-indexed**.
+            col: The column index of the parameter matrix, **1-indexed**.
+
+        Yields:
+            tuple: A 2-tuple of ``(frequency_hz, NetworkParameter)`` for each
+            frequency point.
+
+        Raises:
+            IndexError: If row or col is out of range ``[1, n_ports]``.
         """
         from .network_parameter import NetworkParameter
 
@@ -120,14 +210,21 @@ class TouchstoneData:
             yield (f, NetworkParameter(s))
 
     def where(self, predicate: Callable[["FrequencyPoint"], bool]) -> "TouchstoneData":
-        """
-        Filter the data using a predicate function on FrequencyPoint.
+        """Filter the data using a predicate function.
+
+        Creates a new :class:`TouchstoneData` containing only the frequency
+        points for which the predicate returns ``True``.
 
         Args:
-            predicate: A function that takes a FrequencyPoint and returns True to keep it.
+            predicate: A callable that takes a :class:`FrequencyPoint`
+                and returns ``True`` to keep it.
 
         Returns:
             TouchstoneData: A new filtered instance.
+
+        Example:
+            >>> import numpy as np
+            >>> filtered = data.where(lambda pt: np.abs(pt[0, 0].value) < 0.5)
         """
         keep_indices = [i for i in range(self.n_freq) if predicate(self[i])]
         return TouchstoneData(
@@ -140,48 +237,59 @@ class TouchstoneData:
         )
 
     def to_insertion_loss(self) -> np.ndarray:
-        """
-        Calculate insertion loss (positive dB) from S21.
+        """Calculate insertion loss from S21.
+
+        Insertion loss is computed as ``-|S21|`` in dB (positive values
+        indicate loss).
 
         Returns:
-            np.ndarray: Array of insertion loss values in dB.
+            numpy.ndarray: Array of insertion loss values in dB.
+
+        Raises:
+            ValueError: If the network has fewer than 2 ports.
         """
         from ..utilities.touchstone_data_extensions import to_insertion_loss as _il
 
         return _il(self)
 
     def to_return_loss(self) -> np.ndarray:
-        """
-        Calculate return loss (positive dB) from S11.
+        """Calculate return loss from S11.
+
+        Return loss is computed as ``-|S11|`` in dB (positive values
+        indicate better matching).
 
         Returns:
-            np.ndarray: Array of return loss values in dB.
+            numpy.ndarray: Array of return loss values in dB.
         """
         from ..utilities.touchstone_data_extensions import to_return_loss as _rl
 
         return _rl(self)
 
     def to_vswr(self) -> np.ndarray:
-        """
-        Calculate VSWR from S11.
+        """Calculate VSWR (Voltage Standing Wave Ratio) from S11.
+
+        VSWR is computed as ``(1 + |S11|) / (1 - |S11|)``.
 
         Returns:
-            np.ndarray: Array of VSWR values.
+            numpy.ndarray: Array of VSWR values (dimensionless, ≥ 1.0).
         """
         from ..utilities.touchstone_data_extensions import to_vswr as _vswr
 
         return _vswr(self)
 
     def in_frequency_range(self, min_hz: float, max_hz: float) -> "TouchstoneData":
-        """
-        Filter the data to a specific frequency range.
+        """Filter the data to a specific frequency range.
 
         Args:
-            min_hz (float): Minimum frequency in Hz.
-            max_hz (float): Maximum frequency in Hz.
+            min_hz: Minimum frequency in Hz (inclusive).
+            max_hz: Maximum frequency in Hz (inclusive).
 
         Returns:
-            TouchstoneData: A new filtered instance.
+            TouchstoneData: A new instance containing only the points
+            within the specified range.
+
+        Example:
+            >>> passband = data.in_frequency_range(2.0e9, 3.0e9)
         """
         from ..utilities.touchstone_data_extensions import in_frequency_range as _ifr
 
@@ -192,15 +300,16 @@ class TouchstoneData:
         format: Optional["DataFormat"] = None,
         unit: Optional["FrequencyUnit"] = None,
     ) -> str:
-        """
-        Export the data to a CSV formatted string.
+        """Export the data to a CSV formatted string.
 
         Args:
-            format: Optional DataFormat to override the default.
-            unit: Optional FrequencyUnit to override the default.
+            format: Optional :class:`DataFormat` to override the default.
+                If ``None``, uses the format from :attr:`options`.
+            unit: Optional :class:`FrequencyUnit` to override the default.
+                If ``None``, uses the unit from :attr:`options`.
 
         Returns:
-            str: CSV string representation.
+            str: The CSV string representation of the data.
         """
         import io
 
@@ -214,7 +323,13 @@ class TouchstoneData:
         format: Optional["DataFormat"] = None,
         unit: Optional["FrequencyUnit"] = None,
     ) -> None:
-        """Writes the data to a CSV file-like object or filepath."""
+        """Write the data to a CSV file-like object or filepath.
+
+        Args:
+            writer: A file path (``str``) or a writable file-like object.
+            format: Optional :class:`DataFormat` to override the default.
+            unit: Optional :class:`FrequencyUnit` to override the default.
+        """
         # If writer is a string, open it as a file
         if isinstance(writer, str):
             with open(writer, "w", newline="", encoding="utf-8") as f:
@@ -228,6 +343,13 @@ class TouchstoneData:
         fmt: Optional["DataFormat"] = None,
         unit: Optional["FrequencyUnit"] = None,
     ) -> None:
+        """Internal method to write CSV data to a file object.
+
+        Args:
+            file_obj: A writable file-like object.
+            fmt: Optional data format override.
+            unit: Optional frequency unit override.
+        """
         import csv
 
         from ..utilities.frequency_converter import get_multiplier
@@ -268,6 +390,12 @@ class TouchstoneData:
             writer.writerow(row)
 
     def __repr__(self) -> str:
+        """Return a developer-friendly string representation.
+
+        Returns:
+            str: A string showing the number of ports, frequency points,
+            and frequency range.
+        """
         file_info = f", file: {self.filename}" if self.filename else ""
         return (
             f"TouchstoneData(n_ports={self.n_ports}, n_freq={self.n_freq}, "

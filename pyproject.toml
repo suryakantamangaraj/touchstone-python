@@ -53,10 +53,15 @@ dev = [
 viz = [
     "matplotlib>=3.5.0",
 ]
+docs = [
+    "sphinx>=7.0",
+    "furo",
+    "sphinx-copybutton",
+]
 
 [project.urls]
 Homepage = "https://github.com/suryakantamangaraj/touchstone-python"
-Documentation = "https://github.com/suryakantamangaraj/touchstone-python#readme"
+Documentation = "https://suryakantamangaraj.github.io/touchstone-python/"
 Repository = "https://github.com/suryakantamangaraj/touchstone-python.git"
 Issues = "https://github.com/suryakantamangaraj/touchstone-python/issues"
 Changelog = "https://github.com/suryakantamangaraj/touchstone-python/releases"

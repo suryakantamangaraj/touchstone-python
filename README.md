@@ -130,8 +130,8 @@ touchstone-python/
 │       ├── parsing/                 # Parser engine
 │       └── utilities/               # Converters, extensions, writer
 ├── tests/                           # pytest test suite
+├── docs/                            # Sphinx documentation
 ├── pyproject.toml                   # Project metadata and dependencies
-├── mkdocs.yml                       # Documentation configuration
 └── .github/workflows/               # GitHub Actions CI/CD
 ```
 
