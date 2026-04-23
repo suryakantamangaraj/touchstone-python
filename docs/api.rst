@@ -4,9 +4,6 @@ API Reference
 This page provides auto-generated documentation for the full public API of
 ``touchstone.parser``, built directly from the source code docstrings.
 
-.. contents:: On this page
-   :local:
-   :depth: 2
 
 Main Package
 ------------
