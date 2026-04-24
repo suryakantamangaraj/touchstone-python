@@ -58,7 +58,7 @@ class TouchstoneParser:
         return 2
 
     @staticmethod
-    def _parse_lines(
+    def _parse_lines(  # noqa: C901
         lines: Iterable[str], n_ports: int = 0, filename: Optional[str] = None
     ) -> TouchstoneData:
         """Parse Touchstone data from an iterable of text lines.

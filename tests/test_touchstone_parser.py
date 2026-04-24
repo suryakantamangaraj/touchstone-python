@@ -14,7 +14,6 @@ import io
 import math
 import os
 
-import numpy as np
 import pytest
 
 from touchstone.parser import TouchstoneParser
@@ -91,7 +90,7 @@ class TestParse2Port:
 
         # At 1.0 GHz (3rd point, index 2):
         # S11=-25dB, S21=-0.5dB, S12=-0.6dB, S22=-24dB
-        point = data[2]
+        _ = data[2]
 
         # S11 magnitude in dB
         s11_db = 20 * math.log10(abs(data.s_parameters[2, 0, 0]))

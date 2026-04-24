@@ -20,11 +20,9 @@ from touchstone.parser import (
     TouchstoneParser,
     TouchstoneParserException,
 )
-from touchstone.parser.models.data_format import DataFormat
 from touchstone.parser.models.frequency_point import FrequencyPoint
 from touchstone.parser.models.frequency_unit import FrequencyUnit
 from touchstone.parser.models.network_parameter import NetworkParameter
-from touchstone.parser.models.touchstone_options import TouchstoneOptions
 
 
 # ──────────────────────────────────────────────────────────────────

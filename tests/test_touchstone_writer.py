@@ -1,6 +1,3 @@
-import os
-import tempfile
-
 import numpy as np
 import pytest
 
@@ -11,7 +8,6 @@ from touchstone.parser import (
     TouchstoneData,
     TouchstoneOptions,
     TouchstoneParser,
-    write_snp,
     write_snp_to_string,
 )
 

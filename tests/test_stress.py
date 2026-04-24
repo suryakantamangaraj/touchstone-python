@@ -1,7 +1,6 @@
 import numpy as np
-import pytest
 
-from touchstone.parser import TouchstoneData, TouchstoneOptions
+from touchstone.parser import TouchstoneData
 
 
 def test_stress():

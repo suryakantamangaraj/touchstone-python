@@ -1,5 +1,3 @@
-import pytest
-
 from touchstone.parser import normalize_frequency
 
 

@@ -354,7 +354,6 @@ class TouchstoneData:
 
         from ..utilities.frequency_converter import get_multiplier
         from .data_format import DataFormat
-        from .frequency_unit import FrequencyUnit
 
         writer = csv.writer(file_obj)
 
